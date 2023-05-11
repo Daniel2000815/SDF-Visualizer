@@ -244,10 +244,48 @@ float plane(vec3 p,vec3 n,float h)
   return dot(p,n)+h;
 }
 
+vec3 SimX(vec3 p){
+  return vec3(abs(p.x),p.yz);
+}
+
+vec3 SimY(vec3 p){
+  return vec3(p.x,abs(p.y),p.z);
+}
+
+vec3 SimZ(vec3 p){
+  return vec3(p.xy,abs(p.z));
+}
+
+vec3 SimXY(vec3 p){
+  return vec3(abs(p.xy),p.z);
+}
+vec3 SimXZ(vec3 p){
+  return vec3(abs(p.x),p.y,abs(p.z));
+}
+
+vec3 SimYZ(vec3 p){
+  return vec3(p.x,abs(p.yz));
+}
+
+vec3 SimXYZ(vec3 p){
+  return abs(p);
+}
+
+vec3 Finite_Repeat(in vec3 p,in float s,in vec3 lim)
+{
+  return p-s*clamp(floor(p/s+.5),-lim,lim);
+}
+
+vec3 Ininite_Repeat(in vec3 p,in float s)
+{
+  return mod(p+.5*s,s)-.5*s;
+}
+
 Surface map(vec3 p){
   Material mat=Material(u_specular,u_diffuse,u_ambient,u_smoothness);
-  float sphere=sphere(p-vec3(.5),1.);
-  float cyl=cylinder(p,1.,.5);
+  vec3 newP=Ininite_Repeat(p,10.);
+  float sphere=sphere(newP-vec3(.5),1.);
+  float cyl=cylinder(newP,1.,.5);
   
   float m=smax(sphere,cyl,.5).x;
   
@@ -257,7 +295,7 @@ Surface map(vec3 p){
   Material m2=Material(vec3(1.),vec3(0.,1.,0.),vec3(.2),10.);
   Material mBlend=Material(vec3(1.),mix(m1.diffuse,m2.diffuse,dist_mat.y),vec3(.2),10.);
   
-  vec3 newP=sdfRepeat(p,3.,vec3(30.,20.,2.));
+  // vec3 newP=sdfRepeat(p,3.,vec3(30.,20.,2.));
   
   float ang=1.7;
   //newP=rotateZ(ang)*rotateX(ang)*p;

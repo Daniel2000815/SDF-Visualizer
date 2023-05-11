@@ -4,6 +4,8 @@ import { useStore } from "../../graphStore";
 import {Slider} from "../../Components/Slider";
 import {CustomNode} from "./CustomNode";
 import { BooleanOperations } from "../../Types/NodeOperations";
+import { FloatInput } from "../../Components/FloatInput";
+import { Text } from "@nextui-org/react";
 
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
@@ -29,7 +31,8 @@ export function BooleanNode(props: { id: string; data: any }) {
   );
 
   const [operation, setOperation] = React.useState(BooleanOperations.Union);
-  const [smooth, setSmooth] = React.useState("0.0");
+  const [smooth, setSmooth] = React.useState("0.1");
+  const [n, setN] = React.useState("2.0");
 
   const computeSdf = () => {
     console.log("BOOLEAN NODE SE ACTUALIZA CON ", props.data.inputs);
@@ -43,7 +46,7 @@ export function BooleanNode(props: { id: string; data: any }) {
     }
     if (keys >= 2) {
       console.log("KEYS ", keys);
-      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth})`;
+      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth}, ${n})`;
 
       // Add the rest of inputs
       for (let i = 0; i < keys - 2; i++) {
@@ -60,7 +63,7 @@ export function BooleanNode(props: { id: string; data: any }) {
 
   useEffect(() => {
     computeSdf();
-  }, [operation, smooth]);
+  }, [operation, smooth, n]);
 
   useEffect(() => {
     if (needsToUpdate) {
@@ -83,8 +86,17 @@ export function BooleanNode(props: { id: string; data: any }) {
       {/* UPDATE: {needsToUpdate?.toString()} */}
         {/* SDF: {props.data.sdf} */}
         {/* INPUTS: {JSON.stringify(props.data.inputs)} */}
-        Amount: {smooth}
-      <Slider value={smooth} onChange={setSmooth} theme={theme} />
-    </CustomNode>
+        <Text>Strength: {smooth}</Text>
+       <Slider value={smooth} min="0.001" max="5" onChange={setSmooth} theme={theme} />
+        <FloatInput
+            key={`${props.id}_n`}
+            initialVal={n}
+            onChange={(newVal) => setN(newVal.toFixed(4))}
+            label="n"
+            adornment="n"
+            adornmentPos="left"
+            min={1.0}
+          />
+          </CustomNode>
   );
 }

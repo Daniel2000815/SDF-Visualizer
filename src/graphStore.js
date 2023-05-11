@@ -51,6 +51,12 @@ const defaultNodes = [
     position: { x: 150, y: -400 },
     data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial },
   },
+  {
+    id: "repeat",
+    type: "repeat",
+    position: { x: 150, y: -700 },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial },
+  },
 ];
 
 const examlpeCSG = [

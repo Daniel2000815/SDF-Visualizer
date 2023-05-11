@@ -16,40 +16,58 @@ export const operators = () => `
         vec3  q = vec3(m*p.xy,p.z);
         return q;
     }
-    vec3 sdfRepeat( in vec3 p, in float s, in vec3 lim )
+    vec3 Finite_Repeat( in vec3 p, in float s, in vec3 lim )
     {
         return p-s*clamp(floor(p/s+0.5),-lim,lim);
     }
 
-    float sdfUnion( float d1, float d2 ) {
-        
-        return min(d1,d2);
+    vec3 Infinite_Repeat( in vec3 p, in float s )
+    {
+        return mod(p+0.5*s,s)-0.5*s;
     }
 
-    float sdfSmoothUnion( float d1, float d2, float k ) {
-        float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 );
-        return mix( d2, d1, h ) - k*h*(1.0-h); 
+    float sdfSmoothUnion( float a, float b, float k, float n ) {
+        float h = max( k-abs(a-b), 0.0 )/k;
+        float m = pow(h, n)*0.5;
+        float s = m*k/n; 
+        return (a<b) ? a-s : b-s;
     }
 
-    float sdfDifference( float d1, float d2 ) {
-        
-        return max(d1,-d2);
+    float sdfSmoothIntersection( float d1, float d2, float k, float n ) {
+        return -sdfSmoothUnion(-d1,-d2,k,n);
     }
 
-    float sdfSmoothDifference( float d1, float d2, float k ) {
-        float h = clamp( 0.5 - 0.5*(d2+d1)/k, 0.0, 1.0 );
-        return mix( d1, -d2, h ) + k*h*(1.0-h); 
+    float sdfSmoothDifference( float d1, float d2, float k, float n ) {
+        return sdfSmoothIntersection(d1, -d2, k, n);
     }
 
-    float sdfIntersection( float d1, float d2 ) {
-        
-        return max(d1,d2);
-    }
-
-    float sdfSmoothIntersection( float d1, float d2, float k ) {
-        float h = clamp( 0.5 - 0.5*(d2-d1)/k, 0.0, 1.0 );
-        return mix( d2, d1, h ) + k*h*(1.0-h); 
-    }
+    vec3 Simetry_X(vec3 p){
+        return vec3(abs(p.x), p.yz);
+      }
+      
+      vec3 Simetry_Y(vec3 p){
+        return vec3(p.x, abs(p.y), p.z);
+      }
+      
+      vec3 Simetry_Z(vec3 p){
+        return vec3(p.xy, abs(p.z));
+      }
+      
+      vec3 Simetry_XY(vec3 p){
+        return vec3(abs(p.xy), p.z);
+      }
+      vec3 Simetry_XZ(vec3 p){
+        return vec3(abs(p.x), p.y, abs(p.z));
+      }
+      
+      vec3 Simetry_YZ(vec3 p){
+        return vec3(p.x, abs(p.yz));
+      }
+      
+      vec3 Simetry_XYZ(vec3 p){
+        return abs(p);
+      }
+    
 
     // https://stackoverflow.com/questions/34050929/3d-point-rotation-algorithm
     vec3 sdfRotate(vec3 p, vec3 ang) {
@@ -90,7 +108,7 @@ export const operators = () => `
     }
 
     // Rotation matrix around the X axis.
-    vec3 sdfRotateX(vec3 p, float theta){
+    vec3 sdfRotate_X(vec3 p, float theta){
     float c=cos(theta);
     float s=sin(theta);
     return mat3(
@@ -101,7 +119,7 @@ export const operators = () => `
     }
 
     // Rotation matrix around the Y axis.
-    vec3 sdfRotateY(vec3 p,float theta){
+    vec3 sdfRotate_Y(vec3 p,float theta){
     float c=cos(theta);
     float s=sin(theta);
     return mat3(
@@ -112,7 +130,7 @@ export const operators = () => `
     }
 
     // Rotation matrix around the Z axis.
-    vec3 sdfRotateZ(vec3 p,float theta){
+    vec3 sdfRotate_Z(vec3 p,float theta){
     float c=cos(theta);
     float s=sin(theta);
     return mat3(

@@ -9,10 +9,16 @@ const headerStyke: any = {
 
 export function Vector3Input(props: {
   handleChange: (newFields: string[]) => void;
+  step?: number;
+  min?: number;
+  max?: number;
+  defaultX?: string;
+  defaultY?: string;
+  defaultZ?: string;
 }) {
-  const [x, setX] = useState("0.0");
-  const [y, setY] = useState("0.0");
-  const [z, setZ] = useState("0.0");
+  const [x, setX] = useState(props.defaultX || "0.0");
+  const [y, setY] = useState(props.defaultY || "0.0");
+  const [z, setZ] = useState(props.defaultZ || "0.0");
 
   useEffect(() => {
     props.handleChange([x, y, z]);
@@ -24,30 +30,39 @@ export function Vector3Input(props: {
 
       <Grid  key="xInput">
       <FloatInput
-         initialVal={"0.0"}
+         initialVal={props.defaultX|| "0.0"}
           onChange={(e) => setX(e.toFixed(4))}
           label="inputX"
           adornment="X"
           adornmentPos="left"
+          step={props.step || 0.1}
+          min={props.min || 0.0}
+          max={props.max || 100.0}
           />
       </Grid>
       <Grid  key="yInput">
         <FloatInput
-         initialVal={"0.0"}
+         initialVal={props.defaultY || "0.0"}
           onChange={(e) => setY(e.toFixed(4))}
           label="inputY"
           adornment="Y"
           adornmentPos="left"
+          step={props.step || 0.1}
+          min={props.min || 0.0}
+          max={props.max || 100.0}
           />
 
       </Grid>
       <Grid  key="zInput">
       <FloatInput
-         initialVal={"0.0"}
+         initialVal={props.defaultZ || "0.0"}
           onChange={(e) => setZ(e.toFixed(4))}
           label="inputZ"
           adornment="Z"
           adornmentPos="left"
+          step={props.step || 0.1}
+          min={props.min || 0.0}
+          max={props.max || 100.0}
           />
       </Grid>
     </Grid.Container>

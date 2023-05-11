@@ -8,8 +8,8 @@ function MyHandle(props: {
   style: any;
   theme: Theme;
 }) {
-  const radius = "10px";
-  const margin = "-1px";
+  const radius = "15px";
+  const margin = "-3px";
 
   const style = {
     ...props.style,

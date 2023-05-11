@@ -12,6 +12,7 @@ import { PrimitiveNode } from "./nodes/PrimitiveNode";
 import { DeformNode } from "./nodes/DeformNode";
 import { BooleanNode } from "./nodes/BooleanNode";
 import { TransformNode } from "./nodes/TransformNode";
+import { RepeatNode } from "./nodes/RepeatNode";
 import { useContextMenu } from "react-contexify";
 import { ContextMenu } from "../Components/GraphPage/ContextMenu";
 
@@ -23,6 +24,7 @@ const nodeTypes = {
   deform: DeformNode,
   boolean: BooleanNode,
   transform: TransformNode,
+  repeat: RepeatNode,
 };
 
 const edgeTypes = {

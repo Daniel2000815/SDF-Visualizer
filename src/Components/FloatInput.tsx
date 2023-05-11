@@ -9,14 +9,19 @@ export function FloatInput(props: {
   errorMsg?: string;
   adornment?: string;
   adornmentPos: "right" | "left";
+  step?: number;
+  min?: number;
+  max?: number;
 }) {
   return (
     <Input
       fullWidth
       initialValue={props.initialVal.toString()}
-      defaultValue="0"
+      defaultValue={props.initialVal.toString()}
       onChange={(e) => props.onChange(parseFloat(e.target.value))}
       type="number"
+      min={props.min || 0}
+      max={props.max || 100}
       id={props.label}
       status={props.errorMsg !== undefined && props.errorMsg!=="" ? "error" : "default"}
       color={props.errorMsg !== undefined && props.errorMsg!=="" ? "error" : "default"}
@@ -26,6 +31,7 @@ export function FloatInput(props: {
       labelLeft={props.adornmentPos === "left" ? props.adornment : null}
       placeholder={props.label}
       aria-label={props.label}
+      step={props.step || 0.1}
     />
   );
 }

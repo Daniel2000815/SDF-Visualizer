@@ -1,70 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { Edge, Handle } from "reactflow";
 import { shallow } from "zustand/shallow";
-import { tw } from "twind";
 import { useStore } from "../../graphStore";
-import {Slider} from "../../Components/Slider";
 import {CustomNode} from "./CustomNode";
-import { TransformOperations } from "../../Types/NodeOperations";
+import { RepeatOperations } from "../../Types/NodeOperations";
 import {Vector3Input} from "../../Components/GraphPage/Vector3Input";
 import {FloatInput} from "../../Components/FloatInput";
+
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf }),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
-const dropdownOptions = Object.values(TransformOperations).map(v => v.replace("_", " "));
+const dropdownOptions = Object.values(RepeatOperations).map(v => v.replace("_", " "));
 
 const theme: Theme = {
-  light: "#FFFAA5",
-  primary: "#FFAE21",
-  dark: "#E89300",
-  accent: "#C77E00",
+  light: "#DBA5FF",
+  primary: "#AD33FF",
+  dark: "#7200BF",
+  accent: "#49007B",
 };
 
-export function TransformNode(props: { id: string; data: any }) {
+export function RepeatNode(props: { id: string; data: any }) {
   const { finishUpdate, updateSdf, needsToUpdate } = useStore(
     selector(props.id),
     shallow
   );
 
   const [operation, setOperation] = React.useState(
-    TransformOperations.RotateX
+    RepeatOperations.Finite_Repeat
   );
-  const [transformVal, setTransformVal] = React.useState(["0", "0", "0"]);
+  const [repeatVal, setRepeatVal] = React.useState(["1.0", "1.0", "1.0"]);
+  const [separation, setSeparation] = React.useState("5.0");
 
   const computeSdf = () => {
-    console.log("BOOLEAN NODE SE ACTUALIZA CON ", props.data.inputs);
-
+    console.log("REPEAT NODE SE ACTUALIZA CON ", props.data.inputs);
+    console.log(operation);
     const keys = Object.keys(props.data.inputs);
     let newSdf = "";
-    // let input = Object.values(props.data.inputs).find((val) => val !== "");
-    // console.log(input);
-
     let input = props.data.inputs.values().next().value;
     // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
 
     if (input) {
-      if (operation !== TransformOperations.Scale) {
-        if (
-          operation === TransformOperations.RotateXYZ ||
-          operation === TransformOperations.Translate
-        ) {
-          newSdf = input.replace(
+      if (operation.includes("Simetry")) {
+
+        newSdf = input.replace("p," , `${operation}(p),` );
+        
+      } 
+      else if(operation === RepeatOperations.Finite_Repeat){
+        newSdf = input.replace(
             "p,",
-            `sdf${operation}(p, vec3(${transformVal[0]},${transformVal[1]}, ${transformVal[2]}) ),`
-          );
-        } else {
-          newSdf = input.replace(
+            `${operation}(p, ${separation}, vec3(${repeatVal[0]}, ${repeatVal[1]}, ${repeatVal[2]})),`
+        );
+      } 
+      else if(operation === RepeatOperations.Infinite_Repeat){
+        console.log("inf");
+        newSdf = input.replace(
             "p,",
-            `sdf${operation}(p, ${transformVal[0]}),`
-          );
-        }
-      } else {
-        // const s = `vec3(${transformVal.join(",")})`;
-        const s = transformVal[0];
-        newSdf = input.replace("p,", `(p/${s}),`).concat(`*${s}`);
+            `${operation}(p, ${separation}),`
+        );
       }
     }
 
@@ -85,7 +79,7 @@ export function TransformNode(props: { id: string; data: any }) {
 
   useEffect(() => {
     computeSdf();
-  }, [operation, transformVal]);
+  }, [operation, repeatVal, separation]);
 
   useEffect(() => {
     if (needsToUpdate) {
@@ -96,7 +90,7 @@ export function TransformNode(props: { id: string; data: any }) {
 
   return (
     <CustomNode
-      title={"Transform"}
+      title={"Repeat"}
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
@@ -107,21 +101,23 @@ export function TransformNode(props: { id: string; data: any }) {
       {/* UPDATE: {needsToUpdate.toString()} */}
       {/* SDF: {props.data.sdf} */}
       {/* INPUTS: {JSON.stringify(props.data.inputs)} */}
-      {[TransformOperations.Translate, TransformOperations.RotateXYZ].includes(
+      {[RepeatOperations.Finite_Repeat, RepeatOperations.Infinite_Repeat].includes(
         operation
-      ) ? (
-        <Vector3Input handleChange={setTransformVal} />
-      ) : (
+      ) && 
         <FloatInput
-          initialVal={"0.0"}
-          onChange={(e) => setTransformVal([e.toFixed(4), "0.0", "0.0"])}
+          initialVal={"5.0"}
+          
+          onChange={(e) => setSeparation(e.toFixed(4))}
+          step={1.0}
           label={operation}
-          adornment={
-            operation === TransformOperations.Scale ? "Factor" : "Angle"
-          }
+          adornment="separation"
           adornmentPos="left"
         />
-      )}
+        
+      }
+      {operation === RepeatOperations.Finite_Repeat && 
+        <Vector3Input defaultX="1.0" defaultY="1.0" defaultZ="1.0" min={0} step={1.0} handleChange={setRepeatVal} />
+      }
     </CustomNode>
   );
 }
