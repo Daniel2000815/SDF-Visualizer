@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/SDF-Visualizer/static/css/main.1f03ffed.css",
-    "main.js": "/SDF-Visualizer/static/js/main.deb381d6.js",
+    "main.js": "/SDF-Visualizer/static/js/main.0a3fb660.js",
     "static/media/fira-code-all-400-normal.woff": "/SDF-Visualizer/static/media/fira-code-all-400-normal.c050f0ce726c76d279c8.woff",
     "static/media/KaTeX_AMS-Regular.ttf": "/SDF-Visualizer/static/media/KaTeX_AMS-Regular.f80d9eaff7bad6dad739.ttf",
     "static/media/KaTeX_Main-Regular.ttf": "/SDF-Visualizer/static/media/KaTeX_Main-Regular.af7fc7b32dbf2a640c9c.ttf",
@@ -71,10 +71,10 @@
     "static/media/KaTeX_Size3-Regular.woff2": "/SDF-Visualizer/static/media/KaTeX_Size3-Regular.1ef7adae735724bab211.woff2",
     "index.html": "/SDF-Visualizer/index.html",
     "main.1f03ffed.css.map": "/SDF-Visualizer/static/css/main.1f03ffed.css.map",
-    "main.deb381d6.js.map": "/SDF-Visualizer/static/js/main.deb381d6.js.map"
+    "main.0a3fb660.js.map": "/SDF-Visualizer/static/js/main.0a3fb660.js.map"
   },
   "entrypoints": [
     "static/css/main.1f03ffed.css",
-    "static/js/main.deb381d6.js"
+    "static/js/main.0a3fb660.js"
   ]
 }
