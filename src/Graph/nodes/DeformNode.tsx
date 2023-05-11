@@ -82,6 +82,7 @@ export function DeformNode(props: { id: string; data: any }) {
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
+      defaultDropdpwnOption={DeformOperations.Twist}
       onChangeDropdownOption={setOperation}
       nInputs={1}
       theme={theme}

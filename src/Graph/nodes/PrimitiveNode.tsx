@@ -86,6 +86,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
       nInputs={0}
       title="Primitive"
       dropdownOptions={dropdownOptions}
+      defaultDropdpwnOption={dropdownOptions[0]}
       onChangeDropdownOption={(newP: string) => handleChangePrimitive(newP)}
       theme={theme}
     >

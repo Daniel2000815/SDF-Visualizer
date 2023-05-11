@@ -2,7 +2,7 @@
   "name": "3d-visualizer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://daniel2000815.github.io/SDF-Visualizer/",
+  "homepage": "https://daniel2000815.github.io/SDF-Visualizer",
   "dependencies": {
     "@fontsource/fira-code": "^4.5.13",
     "@nextui-org/react": "^1.0.0-beta.12",

@@ -20,6 +20,7 @@ export function CustomNode({
   nInputs,
   title,
   dropdownOptions,
+  defaultDropdpwnOption,
   onChangeDropdownOption,
   theme
 }) {
@@ -44,7 +45,7 @@ export function CustomNode({
         <div className={`${tw("flex flex-col w-full items-center px-2 space-y-2  pt-1 pb-4")} nodrag`}>
           {dropdownOptions && (
             <DropdownTS
-              defaultValue={dropdownOptions[0]}
+              defaultValue={defaultDropdpwnOption}
               onChange={onChangeDropdownOption}
               items={dropdownOptions}
               label={title}

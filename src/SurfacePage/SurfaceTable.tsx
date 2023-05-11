@@ -25,7 +25,7 @@ const columns = [
   { name: "", uid: "actions", width: 10 },
   { name: "NAME", uid: "name", width: 50 },
   { name: "TYPE", uid: "inputMode", width: 20 },
-  { name: "PARAMETERS", uid: "parameters", width: 30 },
+  { name: "PARAMETERS", uid: "parameters", width: 70 },
   { name: "INPUT", uid: "input", width: 700 },
 
   //   { name: "SDF", uid: "sdf", minWidth: 100 },
@@ -134,20 +134,23 @@ export function SurfaceTable(props: {
     key={JSON.stringify(rows)}
     bordered
     shadow={true}
-    aria-label="Example static bordered collection table"
-    css={{
-      height: "auto",
-      minWidth: "100%",
-      alignContent: "space-around",
-      justifyContent: "flex-start",
-    }}
+    width="100wh"
+    aria-label="Surface Table"
+    // css={{overflow: "auto"}}
+    // css={{
+    //   // height: "auto",
+    //   alignContent: "space-around",
+    //   justifyContent: "flex-start",
+    // }}
   >
     <Table.Header columns={columns}>
       {(column) => (
         <Table.Column
           key={column.uid}
           align={column.uid === "actions" ? "center" : "start"}
-          width={column.width}
+          // width={column.width}
+          css={{width: `5px`}}
+          
         >
           {column.uid !== "actions" ? (
             column.name

@@ -32,7 +32,7 @@ export function TransformNode(props: { id: string; data: any }) {
   const [operation, setOperation] = React.useState(
     TransformOperations.RotateX
   );
-  const [transformVal, setTransformVal] = React.useState(["0", "0", "0"]);
+  const [transformVal, setTransformVal] = React.useState(["0.0", "0.0", "0.0"]);
 
   const computeSdf = () => {
     console.log("BOOLEAN NODE SE ACTUALIZA CON ", props.data.inputs);
@@ -94,13 +94,18 @@ export function TransformNode(props: { id: string; data: any }) {
     }
   }, [needsToUpdate]);
 
+  const handleChangeOption = (v: string) => {
+
+    setOperation(v.replace(" ", "_"));
+  } 
   return (
     <CustomNode
       title={"Transform"}
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
-      onChangeDropdownOption={(v:string) => setOperation(v.replace(" ", "_"))}
+      defaultDropdpwnOption={TransformOperations.RotateX}
+      onChangeDropdownOption={handleChangeOption}
       nInputs={1}
       theme={theme}
     >

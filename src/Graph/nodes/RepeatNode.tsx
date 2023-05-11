@@ -94,6 +94,7 @@ export function RepeatNode(props: { id: string; data: any }) {
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
+      defaultDropdpwnOption={RepeatOperations.Infinite_Repeat}
       onChangeDropdownOption={(v:string) => setOperation(v.replace(" ", "_"))}
       nInputs={1}
       theme={theme}

@@ -79,6 +79,7 @@ export function BooleanNode(props: { id: string; data: any }) {
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
+      defaultDropdpwnOption={BooleanOperations.Union}
       onChangeDropdownOption={setOperation}
       nInputs={Math.max(2, props.data.inputs.size + 1)}
       theme={theme}
@@ -96,6 +97,7 @@ export function BooleanNode(props: { id: string; data: any }) {
             adornment="n"
             adornmentPos="left"
             min={1.0}
+            step={1.0}
           />
           </CustomNode>
   );
