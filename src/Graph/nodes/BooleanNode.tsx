@@ -32,7 +32,7 @@ export function BooleanNode(props: { id: string; data: any }) {
 
   const [operation, setOperation] = React.useState(BooleanOperations.Union);
   const [smooth, setSmooth] = React.useState("0.1");
-  const [n, setN] = React.useState("2.0");
+  const [n, setN] = React.useState(2.0);
 
   const computeSdf = () => {
     console.log("BOOLEAN NODE SE ACTUALIZA CON ", props.data.inputs);
@@ -46,14 +46,14 @@ export function BooleanNode(props: { id: string; data: any }) {
     }
     if (keys >= 2) {
       console.log("KEYS ", keys);
-      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth}, ${n})`;
+      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth}, ${n.toFixed(4)})`;
 
       // Add the rest of inputs
       for (let i = 0; i < keys - 2; i++) {
         console.log("new");
         newSdf = `sdfSmooth${operation}(${
           it.next().value
-        }, ${newSdf}, ${smooth})`;
+        }, ${newSdf}, ${smooth}, ${n.toFixed(4)})`;
       }
     }
 
@@ -79,6 +79,7 @@ export function BooleanNode(props: { id: string; data: any }) {
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
+      dropdownKeys={dropdownOptions}
       defaultDropdpwnOption={BooleanOperations.Union}
       onChangeDropdownOption={setOperation}
       nInputs={Math.max(2, props.data.inputs.size + 1)}
@@ -91,8 +92,9 @@ export function BooleanNode(props: { id: string; data: any }) {
        <Slider value={smooth} min="0.001" max="5" onChange={setSmooth} theme={theme} />
         <FloatInput
             key={`${props.id}_n`}
+            val={n.toString()}
             initialVal={n}
-            onChange={(newVal) => setN(newVal.toFixed(4))}
+            onChange={(newVal) => setN(newVal)}
             label="n"
             adornment="n"
             adornmentPos="left"

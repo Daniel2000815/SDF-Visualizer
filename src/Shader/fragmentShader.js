@@ -210,16 +210,16 @@ void main()
 
         vec3 backgroundColor = vec3(.835, 1.0, 1.0);
         vec3 col    = vec3(0.0);
-        
+        vec3 lookAt = vec3(0.0);
+        vec3 eye    = vec3(0,0,5.0);
         // default ray dir
         vec3 dir = ray_dir( 45.0, u_resolution.xy, gl_FragCoord.xy );
-
+        dir=camera(eye,lookAt)*normalize(vec3(uv,-1));
         // default ray origin
         
 
         // ray marching
-        vec3 lookAt = vec3(0.0);
-        vec3 eye    = vec3(0,0,5.0);
+       
 
         float cameraRadius = 10.0;
         // rotate camera

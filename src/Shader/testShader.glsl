@@ -283,7 +283,8 @@ vec3 Ininite_Repeat(in vec3 p,in float s)
 
 Surface map(vec3 p){
   Material mat=Material(u_specular,u_diffuse,u_ambient,u_smoothness);
-  vec3 newP=Ininite_Repeat(p,10.);
+  // vec3 newP=Ininite_Repeat(p,10.);
+  vec3 newP=p;
   float sphere=sphere(newP-vec3(.5),1.);
   float cyl=cylinder(newP,1.,.5);
   
@@ -387,6 +388,9 @@ vec3 calcNormal(in vec3 p){
   void main()
   {
     vec2 uv=(gl_FragCoord.xy-.5*u_resolution.xy)/u_resolution.y;
+    // gl_FragColor = vec4(uv.xy, 0.0, 1.0);
+    // return;
+    // uv = gl_FragCoord.xy/u_resolution.xy - vec2(0.5);
     vec2 mouseUV=vec2(.5);
     
     if(u_mouse.x>0.||u_mouse.y>0.)

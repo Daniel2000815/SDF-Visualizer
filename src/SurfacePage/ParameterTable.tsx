@@ -157,6 +157,7 @@ export function ParameterTable(props: {
       return (
         <FloatInput
           initialVal={value}
+          val={params[i].defaultVal.toString()}
           onChange={(newVal) => editParam(i, field, newVal.toString())}
           label={label}
           errorMsg={errorMsgs[i][field]}

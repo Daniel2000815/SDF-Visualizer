@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 
 export function FloatInput(props: {
   initialVal: string | number;
+  val: string;
   onChange: (n: number) => void;
   label: string;
   errorMsg?: string;
@@ -16,6 +17,7 @@ export function FloatInput(props: {
   return (
     <Input
       fullWidth
+      value={props.val}
       initialValue={props.initialVal.toString()}
       defaultValue={props.initialVal.toString()}
       onChange={(e) => props.onChange(parseFloat(e.target.value))}

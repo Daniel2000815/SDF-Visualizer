@@ -20,6 +20,7 @@ export function CustomNode({
   nInputs,
   title,
   dropdownOptions,
+  dropdownKeys,
   defaultDropdpwnOption,
   onChangeDropdownOption,
   theme
@@ -46,6 +47,7 @@ export function CustomNode({
           {dropdownOptions && (
             <DropdownTS
               defaultValue={defaultDropdpwnOption}
+              keys={dropdownKeys}
               onChange={onChangeDropdownOption}
               items={dropdownOptions}
               label={title}

@@ -31,7 +31,8 @@ export function Vector3Input(props: {
       <Grid  key="xInput">
       <FloatInput
          initialVal={props.defaultX|| "0.0"}
-          onChange={(e) => setX(e.toFixed(4))}
+         val={x}
+          onChange={(e) => setX(e.toString())}
           label="inputX"
           adornment="X"
           adornmentPos="left"
@@ -43,7 +44,8 @@ export function Vector3Input(props: {
       <Grid  key="yInput">
         <FloatInput
          initialVal={props.defaultY || "0.0"}
-          onChange={(e) => setY(e.toFixed(4))}
+         val={y}
+          onChange={(e) => setY(e.toString())}
           label="inputY"
           adornment="Y"
           adornmentPos="left"
@@ -56,7 +58,8 @@ export function Vector3Input(props: {
       <Grid  key="zInput">
       <FloatInput
          initialVal={props.defaultZ || "0.0"}
-          onChange={(e) => setZ(e.toFixed(4))}
+         val={z}
+          onChange={(e) => setZ(e.toString())}
           label="inputZ"
           adornment="Z"
           adornmentPos="left"

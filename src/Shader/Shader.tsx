@@ -120,7 +120,9 @@ function MyShader(props: {
     console.log("HELLO ", props.material)
   }, [props.sdf, props.primitives]);
 
-  
+  useEffect(()=>{
+    console.log("zoom:" , zoom);
+  }, [zoom])
   
 
   function CreateShader(sdf: string, primitives: string) {
@@ -202,14 +204,12 @@ function MyShader(props: {
         onMouseLeave={handleMouseLeave}
       >
         <ReactScrollWheelHandler
-          timeout={0}
+          timeout={-1}
           preventScroll={true}
-          upHandler={(e) => setZoom(zoom + zoomIncrement)}
-          downHandler={(e) => setZoom(zoom - zoomIncrement)}
-          disableSwipeWithMouse={true}
-        >
+          upHandler={() => setZoom(zoom + zoomIncrement)}
+          downHandler={() => setZoom(zoom - zoomIncrement)}        >
           <Surface
-          
+            
             visitor={visitor}
             width={props.width || 100}
             height={props.height || 100}

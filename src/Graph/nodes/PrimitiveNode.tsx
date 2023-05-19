@@ -30,23 +30,29 @@ export function PrimitiveNode(props: { id: string; data: any }) {
     primitives.find((p: any) => p.id === props.data.id)
   );
 
-  const [dropdownOptions, setDropdownOptions] = React.useState(primitives.map((p: any) => p.id));
+  const [dropdownOptions, setDropdownOptions] = React.useState<string[]>(primitives.map((p: any) => p.name));
+  const [dropdownKeys, setDropdownKeys] = React.useState<string[]>(primitives.map((p: any) => p.id));
 
   useEffect(()=>{
-    setDropdownOptions(primitives.map((p: any) => p.id))
+    setDropdownOptions(primitives.map((p: any) => p.name))
+    setDropdownKeys(primitives.map((p: any) => p.id));
   }, [primitives])
 
   
   const handleChangePrimitive = (newP: string) => {
+    console.log("NEW PRIM ", newP);
     const newPrimitive = primitives.find((p: any) => p.id === newP);
     const parameters: Parameter[] = newPrimitive.parameters;
-    if (inputs.length < parameters.length)
-      setInputs(
-        inputs.concat(new Array(parameters.length - inputs.length).fill(0))
-      );
+    // if (inputs.length < parameters.length)
+    //   setInputs(
+    //     inputs.concat(new Array(parameters.length - inputs.length).fill("0.0"))
+    //   );
+
+    const newInputs = Object.keys(parameters).map((_, idx: number) => parameters[idx].defaultVal);
+    setInputs(newInputs);
 
     const sdf = `${newP}(p${parameters.length > 0 ? "," : ""}${parameters
-      .map((p, idx) => `${inputs[idx].toFixed(4)}`)
+      .map((p, idx) => `${newInputs[idx].toFixed(4)}`)
       .join(",")})`;
 
     setPrimitive(newPrimitive);
@@ -54,6 +60,11 @@ export function PrimitiveNode(props: { id: string; data: any }) {
     setInputLabels(
       Object.keys(parameters).map((_, idx: number) => parameters[idx].label)
     );
+
+    console.log("pARAM ", parameters);
+
+
+    
     
     changePrimitive(sdf, newPrimitive.material);
   };
@@ -85,8 +96,9 @@ export function PrimitiveNode(props: { id: string; data: any }) {
       data={props.data}
       nInputs={0}
       title="Primitive"
+      dropdownKeys={dropdownKeys}
       dropdownOptions={dropdownOptions}
-      defaultDropdpwnOption={dropdownOptions[0]}
+      defaultDropdpwnOption={dropdownKeys[0]}
       onChangeDropdownOption={(newP: string) => handleChangePrimitive(newP)}
       theme={theme}
     >
@@ -95,6 +107,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
           <FloatInput
             key={`${props.id}_${idx}`}
             initialVal={inputs[idx]}
+            val={inputs[idx].toString()}
             onChange={(newVal) => handleInputChange(newVal, idx)}
             label={inputLabels[idx]}
             adornment={inputLabels[idx]}

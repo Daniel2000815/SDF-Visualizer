@@ -23,6 +23,7 @@ function MyHandle(props: {
 
   return (
     <>
+    
       <Handle
         id={`${props.nodeId}_${props.type}_${props.inputNumber}`}
         type={props.type}
@@ -39,6 +40,7 @@ function MyHandle(props: {
         }
         position={props.type === "source" ? Position.Right : Position.Left}
       />
+
     </>
 
   );

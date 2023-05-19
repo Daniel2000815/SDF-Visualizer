@@ -31,7 +31,7 @@ export function RepeatNode(props: { id: string; data: any }) {
     RepeatOperations.Finite_Repeat
   );
   const [repeatVal, setRepeatVal] = React.useState(["1.0", "1.0", "1.0"]);
-  const [separation, setSeparation] = React.useState("5.0");
+  const [separation, setSeparation] = React.useState(5.0);
 
   const computeSdf = () => {
     console.log("REPEAT NODE SE ACTUALIZA CON ", props.data.inputs);
@@ -50,14 +50,14 @@ export function RepeatNode(props: { id: string; data: any }) {
       else if(operation === RepeatOperations.Finite_Repeat){
         newSdf = input.replace(
             "p,",
-            `${operation}(p, ${separation}, vec3(${repeatVal[0]}, ${repeatVal[1]}, ${repeatVal[2]})),`
+            `${operation}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0]}, ${repeatVal[1]}, ${repeatVal[2]})),`
         );
       } 
       else if(operation === RepeatOperations.Infinite_Repeat){
         console.log("inf");
         newSdf = input.replace(
             "p,",
-            `${operation}(p, ${separation}),`
+            `${operation}(p, ${separation.toFixed(4)}),`
         );
       }
     }
@@ -94,7 +94,8 @@ export function RepeatNode(props: { id: string; data: any }) {
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
-      defaultDropdpwnOption={RepeatOperations.Infinite_Repeat}
+      defaultDropdpwnOption={dropdownOptions[8]}
+      dropdownKeys={dropdownOptions}
       onChangeDropdownOption={(v:string) => setOperation(v.replace(" ", "_"))}
       nInputs={1}
       theme={theme}
@@ -107,8 +108,8 @@ export function RepeatNode(props: { id: string; data: any }) {
       ) && 
         <FloatInput
           initialVal={"5.0"}
-          
-          onChange={(e) => setSeparation(e.toFixed(4))}
+          val={separation.toString()}
+          onChange={(e) => setSeparation(e)}
           step={1.0}
           label={operation}
           adornment="separation"

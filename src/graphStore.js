@@ -36,13 +36,13 @@ const defaultNodes = [
   {
     id: "deform",
     type: "deform",
-    position: { x: 150, y: 200 },
+    position: { x: 150, y: 300 },
     data: { sdf: "", inputs: new Map(), children: [] , material: defaultMaterial },
   },
   {
     id: "boolean",
     type: "boolean",
-    position: { x: 150, y: -100 },
+    position: { x: 150, y: -75 },
     data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial },
   },
   {
@@ -206,6 +206,7 @@ const examlpeCSG = [
     dragging: false,
   },
 ];
+
 const defaultPrimitives = [
   {
     id: "sphere",
@@ -545,16 +546,12 @@ export const useStore = create((set, get) => ({
 
     const sourceNode = get().nodes.find((n) => n.id === source);
     const targetNode = get().nodes.find((n) => n.id === target);
-    console.log(targetNode);
     var newEdges = [];
-    console.log(
-      targetNode.data.type === NodeTypes.Boolean,
-      targetNode.data.type
-    );
+
     if (targetNode.type === NodeTypes.Boolean) {
       let found = false;
 
-      const otherInputEdges = get().edges.filter((e) => e.target === target);
+      const otherInputEdges = get().edges.filter((e) => e.target === target).sort((a,b)=> a.targetHandle >= b.targetHandle ? 1 : -1);
       newEdges = get().edges.filter((e) => e.target !== target);
 
       let length = otherInputEdges.length;
@@ -571,7 +568,7 @@ export const useStore = create((set, get) => ({
             var newEdge = otherInputEdges[i];
             newEdge.source = otherInputEdges[i + 1].source;
             newEdge.targetHandle = otherInputEdges[i].targetHandle;
-            length--;
+            // length--;
             newEdges.push(newEdge);
           }
         } else {

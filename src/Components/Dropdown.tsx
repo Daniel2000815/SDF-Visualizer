@@ -1,27 +1,31 @@
 import React from "react";
 import { Dropdown } from "@nextui-org/react";
 import { useEffect } from "react";
+import { type } from "os";
+import { keys } from "nerdamer-ts/dist/Core/Utils";
 
-export function DropdownTS(props:{items: string[], defaultValue: string, onChange: (sel: string)=>void, label: string, theme: Theme} ) {
+export function DropdownTS(props:{items: string[], keys?: string[], defaultValue: string, onChange: (sel: string)=>void, label: string, theme: Theme} ) {
   const [menuItems, setMenuItems] = React.useState<{key:string, name:string}[]>([]);
   const [selected, setSelected] = React.useState<any>(new Set([props.defaultValue]));
 
   useEffect(() => {
     console.log("what");
+
     let newItems : {key:string, name:string}[]  = [];
-    props.items.forEach((i) => newItems.push({ key: i, name: i }));
+    props.items.forEach((i,idx) => newItems.push({ key: props.keys?.at(idx) || i, name: i }));
     setMenuItems(newItems);
   }, [props.items]);
 
   
 
   const selectedValue = React.useMemo(
-    () => Array.from(selected).join(", ").replaceAll("_", " "),
+    () => props.items[props.keys?.indexOf(Array.from(selected).join("")) || 0],
     [selected]
   );
 
   useEffect(() => {
-    props.onChange(selectedValue);
+    console.log("ASA ", selected)
+    props.onChange(Array.from(selected).join(""));
   }, [selected]);
 
   return (

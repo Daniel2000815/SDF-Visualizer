@@ -35,4 +35,5 @@ export const NodeTypes = {
   Boolean: "boolean",
   Transform: "transform",
   Deform: "deform",
+  Repeat: "repeat"
 };
