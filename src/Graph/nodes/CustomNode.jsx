@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { tw } from "twind";
-import { useStore } from "../../graphStore";
 import {CustomHandle} from "./parts/CustomHandle";
 import {Shader} from "../../Shader/Shader";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
@@ -9,9 +8,7 @@ import {DropdownTS} from "../../Components/Dropdown";
 import { defaultMaterial } from "../../Shader/defaultMaterial";
 const width = "200px";
 
-const selector = (id) => (store) => ({
-  setGain: (e) => store.updateNode(id, { gain: +e.target.value }),
-});
+
 
 export function CustomNode({
   id,
@@ -25,7 +22,6 @@ export function CustomNode({
   onChangeDropdownOption,
   theme
 }) {
-  const { setGain } = useStore(selector(id), shallow);
   const [showMore, setShowMore] = React.useState(true);
   useEffect(()=>{
     console.log("WHAT X2 ", dropdownOptions);

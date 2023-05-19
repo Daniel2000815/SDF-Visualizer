@@ -53,19 +53,19 @@ export default function CustomContextMenu(props) {
 }
 */
 import { shallow } from "zustand/shallow";
-import { useStore } from "../../graphStore";
-
+import { usePrimitiveStore } from "../../primitiveStore";
 import { Menu, Item, Separator, Submenu } from "react-contexify";
 
 import { IoPrism, IoShapes, IoCrop, IoHammer, IoCopy } from "react-icons/io5"; // primitiva, boolean, transform, deform
 import { Text } from "@nextui-org/react";
 import { NodeTypes } from "../../Types/NodeOperations";
+
 const selector = () => (store) => ({
   primitives: store.primitives,
 });
 
 export function ContextMenu(props) {
-  const { primitives, changePrimitive } = useStore(selector(), shallow);
+  const { primitives, changePrimitive } = usePrimitiveStore(selector(), shallow);
   const icons = [<IoPrism />, <IoShapes />, <IoCrop />, <IoHammer />, <IoCopy/>];
 
   return (

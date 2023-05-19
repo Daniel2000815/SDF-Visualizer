@@ -14,7 +14,8 @@ import React, { useEffect, useState } from "react";
 import { CiCirclePlus, CiRedo, CiTrash, CiEdit } from "react-icons/ci";
 
 import { InputMode } from "../Types/InputMode";
-import { useStore } from "../graphStore";
+// import { useStore } from "../graphStore";
+import { usePrimitiveStore } from "../primitiveStore";
 import { shallow } from "zustand/shallow";
 
 import "katex/dist/katex.min.css";
@@ -101,12 +102,12 @@ export function SurfaceTable(props: {
   handleNew: Function;
   handleEdit: Function;
 }) {
-  const { primitives, restorePrimitives, deletePrimitive } = useStore(
+  const { primitives, restorePrimitives, deletePrimitive } = usePrimitiveStore(
     selector(),
     shallow
   );
 
-  const rows : EquationData[] = useStore(state => Object.values(state.primitives) as EquationData[]);
+  const rows : EquationData[] = usePrimitiveStore(state => Object.values(state.primitives) as EquationData[]);
   const handleEdit = (id: string) => {
     props.handleEdit(id);
   };

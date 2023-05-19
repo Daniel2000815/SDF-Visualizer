@@ -1,7 +1,8 @@
 //@flow
 import React, { useState, useEffect, memo, useRef } from "react";
 
-import { useStore } from "../graphStore";
+// import { useStore } from "../graphStore";
+import { usePrimitiveStore } from "../primitiveStore";
 import { shallow } from "zustand/shallow";
 import UseAnimations from "react-useanimations";
 import alertCircle from "react-useanimations/lib/alertCircle";
@@ -75,7 +76,7 @@ function MyShader(props: {
   uniforms?: any[];
   material: Material;
 }) {
-  const { savedPrimitives } = useStore(selector(), shallow);
+  const { savedPrimitives } = usePrimitiveStore(selector(), shallow);
 
   const [zoom, setZoom] = useState(1.5);
   const zoomIncrement = 0.1;

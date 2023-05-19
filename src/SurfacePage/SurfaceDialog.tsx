@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
-import { useStore } from "../graphStore";
+// import { useStore } from "../graphStore";
+import { usePrimitiveStore } from "../primitiveStore";
 import { shallow } from "zustand/shallow";
 import { Modal, Grid, Row, Button, Text, Collapse } from "@nextui-org/react";
 
@@ -41,7 +42,7 @@ export function SurfaceDialog(props: {
   handleClose: Function;
   open: boolean;
 }) {
-  const { primitives, updatePrimitive, createPrimitive } = useStore(
+  const { primitives, updatePrimitive, createPrimitive } = usePrimitiveStore(
     selector(),
     shallow
   );

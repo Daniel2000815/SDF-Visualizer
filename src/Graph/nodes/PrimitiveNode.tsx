@@ -2,14 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Handle } from "reactflow";
 import { shallow } from "zustand/shallow";
 import { tw } from "twind";
+// import { useStore } from "../../graphStore";
+import { usePrimitiveStore } from "../../primitiveStore";
 import { useStore } from "../../graphStore";
 import { useTheme } from '@nextui-org/react';
 
 import {CustomNode} from "./CustomNode";
 import {FloatInput} from "../../Components/FloatInput";
 
-const selector = (id: any) => (store: any) => ({
+const primitiveSelector = (id: any) => (store: any) => ({
   primitives: store.primitives,
+});
+
+const graphSelector = (id: any) => (store: any) => ({
   changePrimitive: (newP: string, mat: Material) => store.updateNode(id, { sdf: newP, material:  mat}),
 });
 
@@ -22,7 +27,8 @@ const theme : Theme = {
 
 
 export function PrimitiveNode(props: { id: string; data: any }) {
-  const { primitives, changePrimitive } = useStore(selector(props.id), shallow);
+  const { primitives } = usePrimitiveStore(primitiveSelector(props.id), shallow);
+  const { changePrimitive } = useStore(graphSelector(props.id), shallow);
 
   const [inputs, setInputs] = React.useState([1.0, 1.0, 1.0]);
   const [inputLabels, setInputLabels] = React.useState(["Radius", "", ""]);
