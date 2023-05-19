@@ -9,7 +9,7 @@ import {
   TransformOperations,
 } from "./Types/NodeOperations";
 import { defaultMaterial } from "./Shader/defaultMaterial";
-
+import { exampleNodes } from "./exampleNodes";
 // import {
 //   isRunning,
 //   toggleAudio,
@@ -497,3 +497,4 @@ export const useStore = create((set, get) => ({
     console.log("se han borrado edges:", get().edges);
   },
 }));
+

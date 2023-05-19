@@ -158,7 +158,7 @@ function App() {
       <Navbar maxWidth="fluid" isCompact isBordered variant="sticky">
         <Navbar.Brand>
           <Text b color="inherit" hideIn="xs">
-            3D Visualizer
+            SDF Visualizer
           </Text>
         </Navbar.Brand>
         <Navbar.Content variant="underline">

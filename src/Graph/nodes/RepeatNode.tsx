@@ -30,7 +30,7 @@ export function RepeatNode(props: { id: string; data: any }) {
   const [operation, setOperation] = React.useState(
     RepeatOperations.Finite_Repeat
   );
-  const [repeatVal, setRepeatVal] = React.useState(["1.0", "1.0", "1.0"]);
+  const [repeatVal, setRepeatVal] = React.useState([1.0, 1.0, 1.0]);
   const [separation, setSeparation] = React.useState(5.0);
 
   const computeSdf = () => {
@@ -50,7 +50,7 @@ export function RepeatNode(props: { id: string; data: any }) {
       else if(operation === RepeatOperations.Finite_Repeat){
         newSdf = input.replace(
             "p,",
-            `${operation}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0]}, ${repeatVal[1]}, ${repeatVal[2]})),`
+            `${operation}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0].toFixed(4)}, ${repeatVal[1].toFixed(4)}, ${repeatVal[2].toFixed(4)})),`
         );
       } 
       else if(operation === RepeatOperations.Infinite_Repeat){
@@ -118,7 +118,7 @@ export function RepeatNode(props: { id: string; data: any }) {
         
       }
       {operation === RepeatOperations.Finite_Repeat && 
-        <Vector3Input defaultX="1.0" defaultY="1.0" defaultZ="1.0" min={0} step={1.0} handleChange={setRepeatVal} />
+        <Vector3Input defaultX={1.0} defaultY={1.0} defaultZ={1.0} min={0} step={1.0} handleChange={setRepeatVal} />
       }
     </CustomNode>
   );

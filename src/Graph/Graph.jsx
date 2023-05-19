@@ -61,6 +61,7 @@ export function Graph() {
     const { x, y } = rfInstance.project({ x: e.clientX, y: e.clientY });
     console.log(e);
     store.addNode(nodeType, x, y);
+    localStorage.setItem("exampleNodes",JSON.stringify(store.nodes) );
     console.log(JSON.stringify(store.nodes));
   };
 

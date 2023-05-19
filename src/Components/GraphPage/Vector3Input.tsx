@@ -8,17 +8,17 @@ const headerStyke: any = {
 };
 
 export function Vector3Input(props: {
-  handleChange: (newFields: string[]) => void;
+  handleChange: (newFields: number[]) => void;
   step?: number;
   min?: number;
   max?: number;
-  defaultX?: string;
-  defaultY?: string;
-  defaultZ?: string;
+  defaultX?: number;
+  defaultY?: number;
+  defaultZ?: number;
 }) {
-  const [x, setX] = useState(props.defaultX || "0.0");
-  const [y, setY] = useState(props.defaultY || "0.0");
-  const [z, setZ] = useState(props.defaultZ || "0.0");
+  const [x, setX] = useState(props.defaultX || 0.0);
+  const [y, setY] = useState(props.defaultY || 0.0);
+  const [z, setZ] = useState(props.defaultZ || 0.0);
 
   useEffect(() => {
     props.handleChange([x, y, z]);
@@ -30,9 +30,9 @@ export function Vector3Input(props: {
 
       <Grid  key="xInput">
       <FloatInput
-         initialVal={props.defaultX|| "0.0"}
-         val={x}
-          onChange={(e) => setX(e.toString())}
+         initialVal={props.defaultX|| 0.0}
+         val={x.toString()}
+          onChange={(e) => setX(e)}
           label="inputX"
           adornment="X"
           adornmentPos="left"
@@ -43,9 +43,9 @@ export function Vector3Input(props: {
       </Grid>
       <Grid  key="yInput">
         <FloatInput
-         initialVal={props.defaultY || "0.0"}
-         val={y}
-          onChange={(e) => setY(e.toString())}
+         initialVal={props.defaultY || 0.0}
+         val={y.toString()}
+          onChange={(e) => setY(e)}
           label="inputY"
           adornment="Y"
           adornmentPos="left"
@@ -57,9 +57,9 @@ export function Vector3Input(props: {
       </Grid>
       <Grid  key="zInput">
       <FloatInput
-         initialVal={props.defaultZ || "0.0"}
-         val={z}
-          onChange={(e) => setZ(e.toString())}
+         initialVal={props.defaultZ || 0.0}
+         val={z.toString()}
+          onChange={(e) => setZ(e)}
           label="inputZ"
           adornment="Z"
           adornmentPos="left"
