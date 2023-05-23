@@ -1,0 +1,330 @@
+[
+  {
+    "id": "primitive",
+    "type": "primitive",
+    "position": {
+      "x": -370.41695760598503,
+      "y": -155.5112219451372
+    },
+    "data": {
+      "sdf": "cylinder(p,1.6000,0.5000)",
+      "inputs": {},
+      "children": [
+        "transform",
+        "m9z7H5z1zfp8ronNX8YJ7",
+        "DkH4XLdM7PnAtS6dR7rwK"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          0,
+          1,
+          1
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "width": 200,
+    "height": 342,
+    "selected": false,
+    "positionAbsolute": {
+      "x": -370.41695760598503,
+      "y": -155.5112219451372
+    },
+    "dragging": false
+  },
+  {
+    "id": "primitive2",
+    "type": "primitive",
+    "position": {
+      "x": -347.30872817955117,
+      "y": -539.5132169576059
+    },
+    "data": {
+      "sdf": "cube(p,1.0000)",
+      "inputs": {},
+      "children": [
+        "fC5L7_-roG7xtFYnA_iXT"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          0,
+          0,
+          1
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "width": 200,
+    "height": 294,
+    "selected": false,
+    "positionAbsolute": {
+      "x": -347.30872817955117,
+      "y": -539.5132169576059
+    },
+    "dragging": false
+  },
+  {
+    "id": "deform",
+    "type": "deform",
+    "position": {
+      "x": 886.5562797681943,
+      "y": -426.3891817990607
+    },
+    "data": {
+      "sdf": "sdfSmoothDifference(cube(sdfTwist(p, 0.5),1.0000), sdfSmoothUnion(cylinder(p,1.6000,0.5000), sdfSmoothUnion(cylinder(sdfRotate_Z(p, 1.57),1.6000,0.5000), cylinder(sdfRotate_X(p, 1.57),1.6000,0.5000), 0.1, 2.0000), 0.1, 2.0000), 0.1, 2.0000)",
+      "inputs": {},
+      "children": [
+        "repeat"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          1,
+          1,
+          0
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "width": 200,
+    "height": 294,
+    "selected": false,
+    "positionAbsolute": {
+      "x": 886.5562797681943,
+      "y": -426.3891817990607
+    },
+    "dragging": false
+  },
+  {
+    "id": "transform",
+    "type": "transform",
+    "position": {
+      "x": 19.28011417083239,
+      "y": 139.27539011337672
+    },
+    "data": {
+      "sdf": "cylinder(sdfRotate_X(p, 1.57),1.6000,0.5000)",
+      "inputs": {},
+      "children": [
+        "DkH4XLdM7PnAtS6dR7rwK"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          1,
+          1,
+          0
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "width": 200,
+    "height": 52,
+    "selected": false,
+    "positionAbsolute": {
+      "x": 19.28011417083239,
+      "y": 139.27539011337672
+    },
+    "dragging": false
+  },
+  {
+    "id": "repeat",
+    "type": "repeat",
+    "position": {
+      "x": 1235.1993051491738,
+      "y": -467.71285436959823
+    },
+    "data": {
+      "sdf": "sdfSmoothDifference(cube(sdfTwist(Finite_Repeat(p, 5.0000, vec3(1.0000, 1.0000, 1.0000)), 0.5),1.0000), sdfSmoothUnion(cylinder(Finite_Repeat(p, 5.0000, vec3(1.0000, 1.0000, 1.0000)),1.6000,0.5000), sdfSmoothUnion(cylinder(sdfRotate_Z(Finite_Repeat(p, 5.0000, vec3(1.0000, 1.0000, 1.0000)), 1.57),1.6000,0.5000), cylinder(sdfRotate_X(Finite_Repeat(p, 5.0000, vec3(1.0000, 1.0000, 1.0000)), 1.57),1.6000,0.5000), 0.1, 2.0000), 0.1, 2.0000), 0.1, 2.0000)",
+      "inputs": {},
+      "children": [],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          1,
+          1,
+          0
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "width": 200,
+    "height": 446,
+    "selected": true,
+    "positionAbsolute": {
+      "x": 1235.1993051491738,
+      "y": -467.71285436959823
+    },
+    "dragging": false
+  },
+  {
+    "id": "m9z7H5z1zfp8ronNX8YJ7",
+    "type": "transform",
+    "data": {
+      "sdf": "cylinder(sdfRotate_Z(p, 1.57),1.6000,0.5000)",
+      "inputs": {},
+      "children": [
+        "DkH4XLdM7PnAtS6dR7rwK"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          1,
+          1,
+          0
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "position": {
+      "x": 30.83415017977015,
+      "y": 23.690971899318924
+    },
+    "width": 200,
+    "height": 52,
+    "selected": false,
+    "positionAbsolute": {
+      "x": 30.83415017977015,
+      "y": 23.690971899318924
+    },
+    "dragging": false
+  },
+  {
+    "id": "DkH4XLdM7PnAtS6dR7rwK",
+    "type": "boolean",
+    "data": {
+      "sdf": "sdfSmoothUnion(cylinder(p,1.6000,0.5000), sdfSmoothUnion(cylinder(sdfRotate_Z(p, 1.57),1.6000,0.5000), cylinder(sdfRotate_X(p, 1.57),1.6000,0.5000), 0.1, 2.0000), 0.1, 2.0000)",
+      "inputs": {},
+      "children": [
+        "fC5L7_-roG7xtFYnA_iXT"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          1,
+          1,
+          0
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "position": {
+      "x": 324.95389329539717,
+      "y": -253.68097739661047
+    },
+    "width": 200,
+    "height": 354,
+    "selected": false,
+    "positionAbsolute": {
+      "x": 324.95389329539717,
+      "y": -253.68097739661047
+    },
+    "dragging": false
+  },
+  {
+    "id": "fC5L7_-roG7xtFYnA_iXT",
+    "type": "boolean",
+    "data": {
+      "sdf": "sdfSmoothDifference(cube(p,1.0000), sdfSmoothUnion(cylinder(p,1.6000,0.5000), sdfSmoothUnion(cylinder(sdfRotate_Z(p, 1.57),1.6000,0.5000), cylinder(sdfRotate_X(p, 1.57),1.6000,0.5000), 0.1, 2.0000), 0.1, 2.0000), 0.1, 2.0000)",
+      "inputs": {},
+      "children": [
+        "deform"
+      ],
+      "material": {
+        "specular": [
+          1,
+          1,
+          1
+        ],
+        "diffuse": [
+          1,
+          1,
+          0
+        ],
+        "ambient": [
+          0.2,
+          0.2,
+          0.2
+        ],
+        "smoothness": 10
+      }
+    },
+    "position": {
+      "x": 580.1090550580994,
+      "y": -502.95933735473136
+    },
+    "width": 200,
+    "height": 354,
+    "selected": false,
+    "positionAbsolute": {
+      "x": 580.1090550580994,
+      "y": -502.95933735473136
+    },
+    "dragging": false
+  }
+]

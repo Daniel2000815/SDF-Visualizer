@@ -9,7 +9,6 @@ import {
   TransformOperations,
 } from "./Types/NodeOperations";
 import { defaultMaterial } from "./Shader/defaultMaterial";
-import { exampleNodes } from "./exampleNodes";
 // import {
 //   isRunning,
 //   toggleAudio,

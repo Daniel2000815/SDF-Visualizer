@@ -44,18 +44,18 @@ export function RepeatNode(props: { id: string; data: any }) {
     if (input) {
       if (operation.includes("Simetry")) {
 
-        newSdf = input.replace("p," , `${operation}(p),` );
+        newSdf = input.replaceAll("p," , `${operation}(p),` );
         
       } 
       else if(operation === RepeatOperations.Finite_Repeat){
-        newSdf = input.replace(
+        newSdf = input.replaceAll(
             "p,",
             `${operation}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0].toFixed(4)}, ${repeatVal[1].toFixed(4)}, ${repeatVal[2].toFixed(4)})),`
         );
       } 
       else if(operation === RepeatOperations.Infinite_Repeat){
         console.log("inf");
-        newSdf = input.replace(
+        newSdf = input.replaceAll(
             "p,",
             `${operation}(p, ${separation.toFixed(4)}),`
         );

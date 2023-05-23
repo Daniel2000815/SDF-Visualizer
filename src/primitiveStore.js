@@ -9,7 +9,7 @@ const defaultPrimitives = [
       inputMode: InputMode.Implicit,
       input: ["x^2 + y^2 + z^2 - r", "", ""],
       parsedInput: "length(p)-r",
-      parameters: [{ symbol: "r", label: "Radius", defaultVal: 1.0 }],
+      parameters: [{ symbol: "r", label: "Radius", defaultVal: 1.0, type: "range", range:[0,100] }],
       fHeader: "sphere(vec3 p, float r)",
       material: {
         specular: [1.0, 1.0, 1.0],
@@ -25,8 +25,8 @@ const defaultPrimitives = [
       input: ["length(vec2(length(p.xz)-R,p.y)) - r", "", ""],
       parsedInput: "length(vec2(length(p.xz)-R,p.y)) - r",
       parameters: [
-        { symbol: "R", label: "Radius 1", defaultVal: 2.0 },
-        { symbol: "r", label: "Radius 2", defaultVal: 1.0 },
+        { symbol: "R", label: "Radius 1", defaultVal: 2.0, type: "number", range:[0,100] },
+        { symbol: "r", label: "Radius 2", defaultVal: 1.0, type: "number", range:[0,100,] },
       ],
       fHeader: "torus(vec3 p, float R, float r)",
       material: {
@@ -47,7 +47,7 @@ const defaultPrimitives = [
       ],
       parsedInput:
         "length(max(abs(p) - vec3(l),0.0)) + min(max(abs(p.x) - l,max(abs(p.y) - l,abs(p.z) - l)),0.0)",
-      parameters: [{ symbol: "l", label: "side", defaultVal: 1.0 }],
+      parameters: [{ symbol: "l", label: "side", defaultVal: 1.0, type: "number", range:[0,100] }],
       fHeader: "cube(vec3 p, float l)",
       material: {
         specular: [1.0, 1.0, 1.0],
@@ -86,8 +86,8 @@ const defaultPrimitives = [
       parsedInput:
         "min(max((abs(vec2(length(p.xz),p.y))-vec2(r,h)).x, (abs(vec2(length(p.xz),p.y))-vec2(r,h)).y),0.)+length(max(abs(vec2(length(p.xz),p.y))-vec2(r,h),0.))",
       parameters: [
-        { symbol: "h", label: "height", defaultVal: 1.0 },
-        { symbol: "r", label: "radius", defaultVal: 0.5 },
+        { symbol: "h", label: "height", defaultVal: 1.0, type: "number", range:[0,100] },
+        { symbol: "r", label: "radius", defaultVal: 0.5, type: "number", range:[0,100] },
       ],
       fHeader: "cylinder(vec3 p, float h, float r)",
       material: {

@@ -25,7 +25,9 @@ declare global {
   type Parameter = {
     symbol: string; 
     label: string; 
-    defaultVal: number
+    defaultVal: number;
+    type: string;
+    range: number[];
   }
 
   type Theme = {

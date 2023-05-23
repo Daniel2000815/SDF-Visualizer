@@ -51,12 +51,12 @@ export function TransformNode(props: { id: string; data: any }) {
           operation === TransformOperations.RotateXYZ ||
           operation === TransformOperations.Translate
         ) {
-          newSdf = input.replace(
+          newSdf = input.replaceAll(
             "p,",
             `sdf${operation}(p, vec3(${transformVal[0].toFixed(4)},${transformVal[1].toFixed(4)}, ${transformVal[2].toFixed(4)}) ),`
           );
         } else {
-          newSdf = input.replace(
+          newSdf = input.replaceAll(
             "p,",
             `sdf${operation}(p, ${transformVal[0]}),`
           );
@@ -64,7 +64,7 @@ export function TransformNode(props: { id: string; data: any }) {
       } else {
         // const s = `vec3(${transformVal.join(",")})`;
         const s = transformVal[0].toFixed(4);
-        newSdf = input.replace("p,", `(p/${s}),`).concat(`*${s}`);
+        newSdf = input.replaceAll("p,", `(p/${s}),`).concat(`*${s}`);
       }
     }
 

@@ -12,9 +12,8 @@ import {
 import { CiCirclePlus, CiTrash } from "react-icons/ci";
 import UseAnimations from "react-useanimations";
 import trash2 from "react-useanimations/lib/trash2";
-import plusToX from "react-useanimations/lib/plusToX";
 import { FloatInput } from "../Components/FloatInput";
-
+import { DropdownTS } from "../Components/Dropdown";
 const defaultParameter = {
   symbol: "",
   label: "",
@@ -53,7 +52,11 @@ export function ParameterTable(props: {
     props.params.map(() => ["", "", ""])
   );
 
-  const editParam = (idx: number, field: 0 | 1 | 2, val: string) => {
+  const editParam = (
+    idx: number,
+    field: 0 | 1 | 2 | 3 | 4 | 5,
+    val: string
+  ) => {
     let newParams = params.map((p) => p);
     var newErrors = errorMsgs.map(function (arr) {
       return arr.slice();
@@ -63,10 +66,7 @@ export function ParameterTable(props: {
 
     switch (field) {
       case 0:
-        console.log("CHANGING PARAM ", idx);
-        console.log("OLD: ", newParams);
         newParams[idx].symbol = val;
-        console.log("NEW: ", newParams);
         if (val === "") newErrors[idx][0] = "Introduce symbol";
         else {
           const duplicateItems = findDuplicateIndices(
@@ -86,9 +86,39 @@ export function ParameterTable(props: {
         newParams[idx].label = val;
         break;
       case 2:
-        console.log("CHECIING ", val, " : ", val === "");
-        newErrors[idx][2] = val === "" ? "Introduce default value" : "";
-        newParams[idx].defaultVal = Number(val);
+        newParams[idx].type = val;
+        break;
+      case 3:
+        console.log("min ", val === "", val);
+        newErrors[idx][3] = val === "NaN" ? "Introduce min value" : "";
+        if (Number(val) > newParams[idx].range[1])
+          newErrors[idx][3] = "Not valid range";
+
+        newParams[idx].range[0] = Number(val);
+
+        break;
+      case 4:
+        console.log("cambieando maximo ", val);
+        newErrors[idx][4] = val === "NaN" ? "Introduce max value" : "";
+
+        if (Number(val) < newParams[idx].range[0])
+          newErrors[idx][4] = "Not valid range";
+
+        newParams[idx].range[1] = Number(val);
+
+        break;
+      case 5:
+        let nVal = Number(val);
+
+        if (val === "") newErrors[idx][5] = "Introduce default value";
+        else {
+          newParams[idx].defaultVal = Number(val);
+          newErrors[idx][5] =
+            nVal >= newParams[idx].range[0] && nVal <= newParams[idx].range[1]
+              ? ""
+              : "Introduce value in range";
+        }
+
         break;
       default:
         break;
@@ -121,6 +151,8 @@ export function ParameterTable(props: {
         symbol: "",
         label: "",
         defaultVal: 0,
+        range: [0, 1],
+        type: "number",
       })
     );
 
@@ -144,24 +176,26 @@ export function ParameterTable(props: {
 
   function ParamInput(
     i: number,
-    field: 0 | 1 | 2,
+    field: 0 | 1 | 2 | 3 | 4 | 5,
     value: string,
     label: string,
-    type: "number" | "default" = "default"
+    type: "number" | "rangeMin" | "rangeMax" | "default" = "default"
   ) {
     console.log("RENDERING ", i);
     console.log(errorMsgs);
     const color = errorMsgs[i][field] === "" ? "default" : "error";
 
-    if (type === "number") {
+    if (type !== "default") {
       return (
         <FloatInput
-          initialVal={value}
-          val={params[i].defaultVal.toString()}
+          initialVal={0}
+          val={value}
           onChange={(newVal) => editParam(i, field, newVal.toString())}
           label={label}
           errorMsg={errorMsgs[i][field]}
           adornmentPos="left"
+          min={-999}
+          max={999}
         />
       );
     }
@@ -184,13 +218,22 @@ export function ParameterTable(props: {
     <>
       <Row align="flex-end" justify="flex-end"></Row>
       <Grid.Container gap={1}>
-        <Grid xs={3}>
+        <Grid xs={2}>
           <Text h6>Symbol</Text>
         </Grid>
-        <Grid xs={5}>
+        <Grid xs={2}>
           <Text h6>Label</Text>
         </Grid>
-        <Grid xs={3}>
+        <Grid xs={2}>
+          <Text h6>Type</Text>
+        </Grid>
+        <Grid xs={1.5}>
+          <Text h6>Min</Text>
+        </Grid>
+        <Grid xs={1.5}>
+          <Text h6>Max</Text>
+        </Grid>
+        <Grid xs={2}>
           <Text h6>Default Value</Text>
         </Grid>
         <Grid xs={1}>
@@ -207,17 +250,34 @@ export function ParameterTable(props: {
         </Grid>
         {params.map((p, i) => (
           <>
-            <Grid xs={3}>{ParamInput(i, 0, p.symbol, "Symbol")}</Grid>
-            <Grid xs={5}>{ParamInput(i, 1, p.label, "Label")}</Grid>
-            <Grid xs={3}>
+            <Grid xs={2}>{ParamInput(i, 0, p.symbol, "Symbol")}</Grid>
+            <Grid xs={2}>{ParamInput(i, 1, p.label, "Label")}</Grid>
+            <Grid xs={2}>
+              <DropdownTS
+                defaultValue={"number"}
+                keys={["number", "range"]}
+                onChange={(val: string) => editParam(i, 2, val)}
+                items={["Number", "Range"]}
+                label="Type"
+                margin="0px"
+              />
+            </Grid>
+            <Grid xs={1.5}>
+              {ParamInput(i, 3, p.range[0].toString(), "Min", "number")}
+            </Grid>
+            <Grid xs={1.5}>
+              {ParamInput(i, 4, p.range[1].toString(), "Max", "number")}
+            </Grid>
+            <Grid xs={2}>
               {ParamInput(
                 i,
-                2,
+                5,
                 p.defaultVal.toString(),
                 "Default Value",
                 "number"
               )}
             </Grid>
+
             <Grid xs={1}>
               <Tooltip content="Delete parameter">
                 <Button

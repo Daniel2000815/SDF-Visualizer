@@ -1,10 +1,8 @@
 import React from "react";
 import { Dropdown } from "@nextui-org/react";
 import { useEffect } from "react";
-import { type } from "os";
-import { keys } from "nerdamer-ts/dist/Core/Utils";
 
-export function DropdownTS(props:{items: string[], keys?: string[], defaultValue: string, onChange: (sel: string)=>void, label: string, theme: Theme} ) {
+export function DropdownTS(props:{items: string[], keys?: string[], defaultValue: string, onChange: (sel: string)=>void, label: string, theme?: Theme, margin?: string} ) {
   const [menuItems, setMenuItems] = React.useState<{key:string, name:string}[]>([]);
   const [selected, setSelected] = React.useState<any>(new Set([props.defaultValue]));
 
@@ -30,7 +28,7 @@ export function DropdownTS(props:{items: string[], keys?: string[], defaultValue
 
   return (
     <Dropdown>
-      <Dropdown.Button css={{ margin: "10px", width: "100%", color: `${props.theme.dark}`, backgroundColor: `${props.theme.light}` }} flat>
+      <Dropdown.Button css={{ margin: `${props.margin ||"10px"}`, width: "100%", color: `${props.theme?.dark}`, backgroundColor: `${props.theme?.light}` }} flat>
         {selectedValue}
       </Dropdown.Button>
       <Dropdown.Menu

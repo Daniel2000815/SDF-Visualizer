@@ -51,7 +51,7 @@ export function DeformNode(props: { id: string; data: any }) {
   useEffect(() => {
     // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
     let input = props.data.inputs.values().next().value;
-    const newSdf = input ? input.replace("p,", `sdf${operation}(p, ${k}),`) : "";
+    const newSdf = input ? input.replaceAll("p,", `sdf${operation}(p, ${k}),`) : "";
     updateSdf(newSdf);
   }, [operation, k]);
 
