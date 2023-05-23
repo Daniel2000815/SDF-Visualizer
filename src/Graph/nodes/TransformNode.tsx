@@ -58,7 +58,7 @@ export function TransformNode(props: { id: string; data: any }) {
         } else {
           newSdf = input.replaceAll(
             "p,",
-            `sdf${operation}(p, ${transformVal[0]}),`
+            `sdf${operation}(p, ${transformVal[0].toFixed(4)}),`
           );
         }
       } else {

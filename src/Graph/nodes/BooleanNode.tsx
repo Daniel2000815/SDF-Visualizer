@@ -31,7 +31,7 @@ export function BooleanNode(props: { id: string; data: any }) {
   );
 
   const [operation, setOperation] = React.useState(BooleanOperations.Union);
-  const [smooth, setSmooth] = React.useState("0.1");
+  const [smooth, setSmooth] = React.useState(0.1);
   const [n, setN] = React.useState(2.0);
 
   const computeSdf = () => {
@@ -46,14 +46,14 @@ export function BooleanNode(props: { id: string; data: any }) {
     }
     if (keys >= 2) {
       console.log("KEYS ", keys);
-      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth}, ${n.toFixed(4)})`;
+      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth.toFixed(4)}, ${n.toFixed(4)})`;
 
       // Add the rest of inputs
       for (let i = 0; i < keys - 2; i++) {
         console.log("new");
         newSdf = `sdfSmooth${operation}(${
           it.next().value
-        }, ${newSdf}, ${smooth}, ${n.toFixed(4)})`;
+        }, ${newSdf}, ${smooth.toFixed(4)}, ${n.toFixed(4)})`;
       }
     }
 
@@ -88,8 +88,7 @@ export function BooleanNode(props: { id: string; data: any }) {
       {/* UPDATE: {needsToUpdate?.toString()} */}
         {/* SDF: {props.data.sdf} */}
         {/* INPUTS: {JSON.stringify(props.data.inputs)} */}
-        <Text>Strength: {smooth}</Text>
-       <Slider value={smooth} min="0.001" max="5" onChange={setSmooth} theme={theme} />
+       <Slider value={smooth} label="Strength" min="0.001" max="5" onChange={setSmooth} theme={theme} />
         <FloatInput
             key={`${props.id}_n`}
             val={n.toString()}

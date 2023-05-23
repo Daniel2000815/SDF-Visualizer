@@ -30,7 +30,7 @@ export function DeformNode(props: { id: string; data: any }) {
   
   
   const [operation, setOperation] = React.useState(DeformOperations.Bend);
-  const [k, setK] = React.useState("0.5");
+  const [k, setK] = React.useState(0.5);
   
 
   useStore.subscribe((newValue, oldValue) => {
@@ -51,7 +51,7 @@ export function DeformNode(props: { id: string; data: any }) {
   useEffect(() => {
     // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
     let input = props.data.inputs.values().next().value;
-    const newSdf = input ? input.replaceAll("p,", `sdf${operation}(p, ${k}),`) : "";
+    const newSdf = input ? input.replaceAll("p,", `sdf${operation}(p, ${k.toFixed(4)}),`) : "";
     updateSdf(newSdf);
   }, [operation, k]);
 
@@ -65,7 +65,7 @@ export function DeformNode(props: { id: string; data: any }) {
       console.log("AAA ME TENGO QUE ACTUALIZAR CON ", props.data.inputs);
       // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
       let input = props.data.inputs.values().next().value;
-      const newSdf = input ? input.replace("p,", `sdf${operation}(p, ${k}),`) : "";
+      const newSdf = input ? input.replace("p,", `sdf${operation}(p, ${k.toFixed(4)}),`) : "";
       updateSdf(newSdf);
       finishUpdate();
     }
@@ -92,8 +92,7 @@ export function DeformNode(props: { id: string; data: any }) {
         {/* UPDATE: {needsToUpdate.toString()}
         SDF: {props.data.sdf}
         INPUTS: {JSON.stringify(props.data.inputs)} */}
-        Amount: {k}
-        <Slider value={k} onChange={setK} theme={theme}/>
+        <Slider value={k} label={"Amount"} onChange={setK} theme={theme}/>
 
         
        

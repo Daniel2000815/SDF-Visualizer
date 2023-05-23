@@ -6,6 +6,7 @@ import { tw } from "twind";
 import { usePrimitiveStore } from "../../primitiveStore";
 import { useStore } from "../../graphStore";
 import { useTheme } from '@nextui-org/react';
+import {Slider} from "../../Components/Slider";
 
 import {CustomNode} from "./CustomNode";
 import {FloatInput} from "../../Components/FloatInput";
@@ -76,6 +77,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
   };
 
   const handleInputChange = (newVal: number, idx: number) => {
+    console.log(newVal, typeof(newVal));
     const newInputs = [...inputs];
     newInputs[idx] = newVal;
 
@@ -109,7 +111,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
       theme={theme}
     >
       {primitive &&
-        primitive.parameters.map((p: Parameter, idx: number) => (
+        primitive.parameters.map((p: Parameter, idx: number) => p.type==="number" ?( 
           <FloatInput
             key={`${props.id}_${idx}`}
             initialVal={inputs[idx]}
@@ -119,7 +121,9 @@ export function PrimitiveNode(props: { id: string; data: any }) {
             adornment={inputLabels[idx]}
             adornmentPos="left"
           />
-        ))}
+        ) : 
+        <Slider value={inputs[idx].toString()} label={"Amount"} onChange={(newVal: number) => handleInputChange(newVal, idx)} theme={theme}/>
+        )}
         {/* {JSON.stringify(props.data.children)} */}
     </CustomNode>
   );
