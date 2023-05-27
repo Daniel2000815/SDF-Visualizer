@@ -16,9 +16,9 @@ export const fs = (sdf, primitives) => {
     const float DEG_TO_RAD = PI / 180.0;
 
     // Camera control
-    vec2 cameraAng = vec2(0.5, 0.5);
-    bool isDragging = false;
-    vec2 startDraggingPos;
+    // vec2 cameraAng = vec2(0.5, 0.5);
+    // bool isDragging = false;
+    // vec2 startDraggingPos;
 
     uniform vec3 u_specular;
     uniform vec3 u_diffuse;

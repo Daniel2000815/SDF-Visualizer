@@ -105,7 +105,12 @@ export function Graph() {
           <button
             className={tw("px-2 py-1 rounded bg-white shadow")}
           >
-            Add Amp
+            Restore
+          </button>
+          <button
+            className={tw("px-2 py-1 rounded bg-white shadow")}
+          >
+            Example
           </button> */}
         </Panel>
         <Background />

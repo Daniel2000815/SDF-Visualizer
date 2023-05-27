@@ -47,7 +47,7 @@ const defaultPrimitives = [
       ],
       parsedInput:
         "length(max(abs(p) - vec3(l),0.0)) + min(max(abs(p.x) - l,max(abs(p.y) - l,abs(p.z) - l)),0.0)",
-      parameters: [{ symbol: "l", label: "side", defaultVal: 1.0, type: "number", range:[0,100] }],
+      parameters: [{ symbol: "l", label: "side", defaultVal: 1.0, type: "range", range:[0,100] }],
       fHeader: "cube(vec3 p, float l)",
       material: {
         specular: [1.0, 1.0, 1.0],

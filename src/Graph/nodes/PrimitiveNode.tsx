@@ -106,7 +106,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
       title="Primitive"
       dropdownKeys={dropdownKeys}
       dropdownOptions={dropdownOptions}
-      defaultDropdpwnOption={dropdownKeys[0]}
+      defaultDropdpwnOption={dropdownKeys[2]}
       onChangeDropdownOption={(newP: string) => handleChangePrimitive(newP)}
       theme={theme}
     >
@@ -122,7 +122,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
             adornmentPos="left"
           />
         ) : 
-        <Slider value={inputs[idx].toString()} label={"Amount"} onChange={(newVal: number) => handleInputChange(newVal, idx)} theme={theme}/>
+        <Slider value={inputs[idx].toString()} label={inputLabels[idx]} onChange={(newVal: number) => handleInputChange(newVal, idx)} theme={theme}/>
         )}
         {/* {JSON.stringify(props.data.children)} */}
     </CustomNode>
