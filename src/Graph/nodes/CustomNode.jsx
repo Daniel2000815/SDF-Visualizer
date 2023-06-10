@@ -6,9 +6,14 @@ import {Shader} from "../../Shader/Shader";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import {DropdownTS} from "../../Components/Dropdown";
 import { defaultMaterial } from "../../Shader/defaultMaterial";
+import { useStore } from "../../graphStore";
+
 const width = "200px";
 
 
+const selector = () => (store) => ({ 
+  updateSelectedSdf: (newSdf) => store.changeSelectedSdf(newSdf),
+});
 
 export function CustomNode({
   id,
@@ -23,14 +28,23 @@ export function CustomNode({
   theme
 }) {
   const [showMore, setShowMore] = React.useState(true);
+  const { updateSelectedSdf } = useStore(selector(), shallow);
+
+
   useEffect(()=>{
     console.log("WHAT X2 ", dropdownOptions);
   }, [dropdownOptions])
   
+  const handleDoubleClick = () => {
+    if(data){
+      updateSelectedSdf(data.sdf);
+    }
+  }
   return (
     <div
       className={tw(`rounded-lg bg-white shadow-xl border-[${theme?.primary}] border`)}
       style={{ width }}
+      onDoubleClick={()=>handleDoubleClick()}
     >
       <p
         className={tw(

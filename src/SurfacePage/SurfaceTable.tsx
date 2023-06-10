@@ -26,7 +26,7 @@ const columns = [
   { name: "", uid: "actions", width: 10 },
   { name: "NAME", uid: "name", width: 50 },
   { name: "TYPE", uid: "inputMode", width: 20 },
-  { name: "PARAMETERS", uid: "parameters", width: 70 },
+  { name: "PARAMETERS", uid: "parameters", width: 100 },
   { name: "INPUT", uid: "input", width: 700 },
 
   //   { name: "SDF", uid: "sdf", minWidth: 100 },
@@ -130,12 +130,11 @@ export function SurfaceTable(props: {
     return (<Tooltip content="Restore dafult"><Button auto light icon={<CiRedo size={24} />} onClick={() => handleRestore()}/></Tooltip>);
   }
 
-  return(<>
+  return(
   <Table
     key={JSON.stringify(rows)}
     bordered
     shadow={true}
-    width="100wh"
     aria-label="Surface Table"
     // css={{overflow: "auto"}}
     // css={{
@@ -175,5 +174,5 @@ export function SurfaceTable(props: {
         </Table.Row>
       )}
     </Table.Body>
-  </Table></>);
+  </Table>);
 }

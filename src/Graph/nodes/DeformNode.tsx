@@ -6,6 +6,8 @@ import { useStore } from "../../graphStore";
 import {Slider} from "../../Components/Slider";
 import {CustomNode} from "./CustomNode";
 import { DeformOperations } from "../../Types/NodeOperations";
+import {Vector3Input} from "../../Components/GraphPage/Vector3Input";
+import { comboSort } from "nerdamer-ts/dist/Core/Utils";
 
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
@@ -27,9 +29,8 @@ const theme : Theme = {
 
 export function DeformNode(props: { id: string; data: any }) {
   const { finishUpdate, updateSdf, needsToUpdate } = useStore(selector(props.id), shallow);
-  
-  
   const [operation, setOperation] = React.useState(DeformOperations.Bend);
+  const [elong, setElong] = React.useState([0.0, 0.0, 0.0]);
   const [k, setK] = React.useState(0.5);
   
 
@@ -48,28 +49,42 @@ export function DeformNode(props: { id: string; data: any }) {
     // }
   });
 
-  useEffect(() => {
-    // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
+  const computeSdf = () => {
     let input = props.data.inputs.values().next().value;
-    const newSdf = input ? input.replaceAll("p,", `${operation}(p, ${k.toFixed(4)}),`) : "";
+    let newSdf = "";
+
+    if(operation===DeformOperations.Round){
+      newSdf = input ? `${operation}(${input}, ${k.toFixed(4)})` : "";
+    }
+    else{
+      console.log("la operacopm es ", operation);
+      if(operation===DeformOperations.Elongation){
+        console.log("asi que entro aqui")
+        newSdf = input ? input.replaceAll("p,", `${operation}(p, vec3(${elong[0].toFixed(4)},${elong[1].toFixed(4)},${elong[2].toFixed(4)})),`) : "";
+      }
+      else{
+        newSdf = input ? input.replaceAll("p,", `${operation}(p, ${k.toFixed(4)}),`) : "";
+      }
+    }
+
+    console.log("ACT ", newSdf);
     updateSdf(newSdf);
-  }, [operation, k]);
+  }
+  
+  useEffect(() => {
+    computeSdf();
+  }, [operation, elong, k]);
+
+  useEffect(() => {
+    if (needsToUpdate) {
+      computeSdf();
+      finishUpdate();
+    }
+  }, [needsToUpdate]);
 
   useEffect(() => {
     console.log("WHAT X3 ", dropdownOptions);
   }, [dropdownOptions]);
-
-
-  useEffect(()=>{
-    if(needsToUpdate){
-      console.log("AAA ME TENGO QUE ACTUALIZAR CON ", props.data.inputs);
-      // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
-      let input = props.data.inputs.values().next().value;
-      const newSdf = input ? input.replace("p,", `${operation}(p, ${k.toFixed(4)}),`) : "";
-      updateSdf(newSdf);
-      finishUpdate();
-    }
-  }, [needsToUpdate])
 
   const handleChange = (val: string) => {
     // setK(val.toFixed(4));
@@ -92,7 +107,10 @@ export function DeformNode(props: { id: string; data: any }) {
         {/* UPDATE: {needsToUpdate.toString()}
         SDF: {props.data.sdf}
         INPUTS: {JSON.stringify(props.data.inputs)} */}
-        <Slider value={k} label={"Amount"} onChange={setK} theme={theme}/>
+        {operation === DeformOperations.Elongation ? 
+        (<Vector3Input handleChange={setElong} step={1}/>) :
+        (<Slider value={k} label={"Amount"} onChange={setK} theme={theme}/>)
+      }
 
         
        

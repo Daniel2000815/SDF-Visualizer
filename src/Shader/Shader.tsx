@@ -15,21 +15,9 @@ import { defaultMaterial } from "./defaultMaterial";
 const defaultShader = Shaders.create({
   helloGL: {
     frag: GLSL`
-      precision highp float;
-
-      uniform vec3 u_specular;
-      uniform vec3 u_diffuse;
-      uniform vec3 u_ambient;
-      uniform float u_smoothness;
-  
-      uniform vec2 u_resolution;
-      uniform vec2 u_mouse;
-      uniform vec2 u_cameraAng;
-      uniform float u_zoom;
       
-      varying vec2 uv;
       void main() {
-        gl_FragColor = vec4(uv.x, uv.y, 0.5, 1.0);
+        gl_FragColor = vec4(1.0,1.0,1.0, 0.0);
       }
     `,
   },
@@ -67,6 +55,8 @@ const selector = () => (store: any) => ({
 //   console.log("as");
 //   // setCompileError(false);
 // };
+
+
 function MyShader(props: {
   sdf: string;
   primitives: string;
@@ -88,8 +78,12 @@ function MyShader(props: {
   
   const [compileError, setCompileError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  // const [shader, setShader] = useState<ShaderIdentifier>(
+  //   CreateShader(props.sdf, props.primitives).helloGL
+  // );
+
   const [shader, setShader] = useState<ShaderIdentifier>(
-    CreateShader(props.sdf, props.primitives).helloGL
+    defaultShader.helloGL
   );
 
 
@@ -99,7 +93,6 @@ function MyShader(props: {
       if (props.onError) props.onError(e.message);
 
       console.warn(`ERROR COMPILING SHADER ${props.sdf}: `, e.message);
-      console.log(fs(props.sdf, String(savedPrimitives).concat(props.primitives)));
       setCompileError(true);
       setErrorMsg(e.message);
       return true;
@@ -118,6 +111,11 @@ function MyShader(props: {
  
 
   useEffect(() => {
+    if(props.sdf === ""){
+      setCompileError(true);
+      return;
+    }
+
     setCompileError(false);
     setShader(CreateShader(props.sdf, props.primitives).helloGL);
 
@@ -194,7 +192,7 @@ function MyShader(props: {
     if(zoom < 100) setZoom(zoom + zoomIncrement);
   }
 
-  return <div>
+  return <div style={{}}>
     {compileError && 
     <UseAnimations
           size={props.width ? 0.6 * props.width : 24}
@@ -202,7 +200,7 @@ function MyShader(props: {
         />}
     {!compileError && <div
         // ref={ref}
-        style={{ height: "100%", width: "100%" }}
+        // style={{ height: "100%", width: "100%" }}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -213,16 +211,16 @@ function MyShader(props: {
           preventScroll={true}
           disableSwipeWithMouse={true}
           upHandler={(e)=>handleWheelUp(e)}
-          downHandler={(e) => handleWheelDown(e)}>
+          downHandler={(e) => handleWheelDown(e)}
+          >
           <Surface
-            
             visitor={visitor}
             width={props.width || 100}
             height={props.height || 100}
           >
             <Node
             
-            
+
               shader={shader}
               uniforms={{
                 u_ambient: props.material.ambient,

@@ -155,7 +155,7 @@ function App() {
 
   return (
     <NextUIProvider>
-      <Navbar maxWidth="fluid" isCompact isBordered variant="sticky">
+      <Navbar maxWidth="fluid" height={"10vh"} isCompact isBordered variant="sticky">
         <Navbar.Brand>
           <Text b color="inherit" hideIn="xs">
             SDF Visualizer
@@ -182,11 +182,10 @@ function App() {
           </Navbar.Item>
         </Navbar.Content>
       </Navbar>
-      <Container gap={2} xl fluid>
+      
         {tab === 0 && <MainComponent />}
         {tab === 1 && <SurfacePage />}
         <Help />
-      </Container>
     </NextUIProvider>
   );
 }

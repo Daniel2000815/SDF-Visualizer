@@ -231,6 +231,11 @@ export const useStore = create((set, get) => ({
     primitive2: false,
     transform: false,
   },
+  selectedSdf: "",
+
+  changeSelectedSdf(newSdf){
+    set({selectedSdf: newSdf})
+  },
 
   onNodesChange(changes) {
     set({

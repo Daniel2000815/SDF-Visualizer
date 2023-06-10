@@ -1,6 +1,8 @@
 export const DeformOperations = {
   Bend: "Bend",
   Twist: "Twist",
+  Elongation: "Elongation",
+  Round: "Round"
 };
 
 export const BooleanOperations = {

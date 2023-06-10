@@ -18,7 +18,7 @@ vec3 Bend(in vec3 p,in float k)
   return q;
 }
 
-vec3 Elongate(in vec3 p, in vec3 h )
+vec3 Elongation(in vec3 p, in vec3 h )
 {
     return p - clamp( p, -h, h );
 }

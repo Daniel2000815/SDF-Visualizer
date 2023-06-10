@@ -46,7 +46,7 @@ const selector = (store) => ({
 
 
 
-export function Graph() {
+export function Graph(props) {
   
   const { show } = useContextMenu({
     id: "node_context_menu",
@@ -81,6 +81,7 @@ export function Graph() {
     >
       {/* {JSON.stringify(store.edges)} */}
       <ContextMenu newNode={createAddNodeMousePos} />
+      
       <ReactFlow
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}

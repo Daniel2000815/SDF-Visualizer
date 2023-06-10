@@ -202,7 +202,7 @@ export const fs = (sdf, primitives) => {
     
     void main()
     {
-      const vec3 backgroundColor=vec3(0.6784, 0.8824, 0.9333);
+      const vec3 backgroundColor=vec3(0.95);
       const vec3 lookAt=vec3(0.);
     
       vec3 col=vec3(0.);
