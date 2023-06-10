@@ -51,7 +51,7 @@ export function DeformNode(props: { id: string; data: any }) {
   useEffect(() => {
     // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
     let input = props.data.inputs.values().next().value;
-    const newSdf = input ? input.replaceAll("p,", `sdf${operation}(p, ${k.toFixed(4)}),`) : "";
+    const newSdf = input ? input.replaceAll("p,", `${operation}(p, ${k.toFixed(4)}),`) : "";
     updateSdf(newSdf);
   }, [operation, k]);
 
@@ -65,7 +65,7 @@ export function DeformNode(props: { id: string; data: any }) {
       console.log("AAA ME TENGO QUE ACTUALIZAR CON ", props.data.inputs);
       // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
       let input = props.data.inputs.values().next().value;
-      const newSdf = input ? input.replace("p,", `sdf${operation}(p, ${k.toFixed(4)}),`) : "";
+      const newSdf = input ? input.replace("p,", `${operation}(p, ${k.toFixed(4)}),`) : "";
       updateSdf(newSdf);
       finishUpdate();
     }

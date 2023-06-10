@@ -44,21 +44,22 @@ export function TransformNode(props: { id: string; data: any }) {
 
     let input = props.data.inputs.values().next().value;
     // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
-
+    
     if (input) {
       if (operation !== TransformOperations.Scale) {
+        const op = operation.replace("_","");
         if (
           operation === TransformOperations.RotateXYZ ||
           operation === TransformOperations.Translate
         ) {
           newSdf = input.replaceAll(
             "p,",
-            `sdf${operation}(p, vec3(${transformVal[0].toFixed(4)},${transformVal[1].toFixed(4)}, ${transformVal[2].toFixed(4)}) ),`
+            `${op}(p, vec3(${transformVal[0].toFixed(4)},${transformVal[1].toFixed(4)}, ${transformVal[2].toFixed(4)}) ),`
           );
         } else {
           newSdf = input.replaceAll(
             "p,",
-            `sdf${operation}(p, ${transformVal[0].toFixed(4)}),`
+            `${op}(p, ${transformVal[0].toFixed(4)}),`
           );
         }
       } else {

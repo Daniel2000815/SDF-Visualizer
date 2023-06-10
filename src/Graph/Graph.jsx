@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactFlow, {
   Background,
   Panel,
@@ -70,6 +70,9 @@ export function Graph() {
     updateNodeInternals(con.target);
   }
 
+  useEffect(()=>{
+    console.log(store.nodes);
+  },[])
 
   return (
     <div

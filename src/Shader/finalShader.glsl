@@ -44,7 +44,7 @@ const float u_kd = 2.0;
 const float u_smoothness=100.;
 const float u_zoom=1.5;
 const vec2 u_cameraAng=vec2(1.4,0.2);
-
+const
 struct Material
 {
   vec3 ambient;
@@ -53,17 +53,16 @@ struct Material
   float kd;
   vec3 specular;
   float ks;
-  
   vec3 emission;
   float smoothness;
 };
 
 struct Surface{
-  float sd;// signed distance value
+  float sd;
   Material mat;
 };
 
-mat3 rotateX(float theta){
+mat3 RotateX(float theta){
   float c=cos(theta);
   float s=sin(theta);
   return mat3(
@@ -73,8 +72,7 @@ mat3 rotateX(float theta){
   );
 }
 
-// Rotation matrix around the Y axis.
-mat3 rotateY(float theta){
+mat3 RotateY(float theta){
   float c=cos(theta);
   float s=sin(theta);
   return mat3(
@@ -86,7 +84,7 @@ mat3 rotateY(float theta){
 
 // === DEFORM OPERATORS ===
 
-vec3 sdfTwist(in vec3 p,in float k)
+vec3 Twist(in vec3 p,in float k)
 {
   float c=cos(k*p.y);
   float s=sin(k*p.y);
@@ -95,7 +93,7 @@ vec3 sdfTwist(in vec3 p,in float k)
   return q;
 }
 
-vec3 sdfBend(in vec3 p,in float k)
+vec3 Bend(in vec3 p,in float k)
 {
   float c=cos(k*p.x);
   float s=sin(k*p.x);
@@ -104,37 +102,37 @@ vec3 sdfBend(in vec3 p,in float k)
   return q;
 }
 
-vec3 opElongate(in vec3 p, in vec3 h )
+vec3 Elongate(in vec3 p, in vec3 h )
 {
     return p - clamp( p, -h, h );
 }
 
-float opRound(float p, float rad )
+float Round(float p, float rad )
 {
     return p-rad;
 }
 
 // === REPEAT OPERATORS ===
-vec3 sdfRepeat(in vec3 p,in float s,in vec3 lim)
+vec3 Repeat(in vec3 p,in float s,in vec3 lim)
 {
   return p-s*clamp(floor(p/s+.5),-lim,lim);
 }
 
-vec3 sdfInfiniteRepeat(in vec3 p,in float s)
+vec3 InfiniteRepeat(in vec3 p,in float s)
 {
   return mod(p+.5*s,s)-.5*s;
 }
 
 // === BOOLEAN OPERATORS ===
 
-Surface sdfSurfaceUnion(Surface s1,Surface s2){
+Surface SurfaceUnion(Surface s1,Surface s2){
   if(s1.sd<s2.sd)
   return s1;
   
   return s2;
 }
 
-float sdfSmoothUnion(float a,float b,float k,float n,out float interp)
+float Union(float a,float b,float k,float n,out float interp)
 {
   if(k==0.){
     return min(a,b);
@@ -147,26 +145,18 @@ float sdfSmoothUnion(float a,float b,float k,float n,out float interp)
   return(a<b)?a-s:b-s;
 }
 
-float sdfIntersection(float a,float b){
-  return max(a,b);
-}
-
-float sdfSmoothIntersection(float a,float b,float k,float n,out float interp)
+float Intersection(float a,float b,float k,float n,out float interp)
 {
-  return-sdfSmoothUnion(-a,-b,k,n,interp);
+  return -Union(-a,-b,k,n,interp);
 }
 
-float sdfDifference(float a,float b){
-  return min(a,-b);
-}
-
-float sdfSmoothDifference(float a,float b,float k,float n,out float interp)
+float Difference(float a,float b,float k,float n,out float interp)
 {
-  return sdfSmoothUnion(a,-b,k,n,interp);
+  return Intersection(a,-b,k,n,interp);
 }
 
 // === TRANSFORM OPERATORS ===
-vec3 sdfRotateX(vec3 p,float theta){
+vec3 RotateX(vec3 p,float theta){
   float c=cos(theta);
   float s=sin(theta);
   
@@ -177,7 +167,7 @@ vec3 sdfRotateX(vec3 p,float theta){
   )*p;
 }
 
-vec3 sdfRotateY(vec3 p,float theta){
+vec3 RotateY(vec3 p,float theta){
   float c=cos(theta);
   float s=sin(theta);
   
@@ -188,7 +178,7 @@ vec3 sdfRotateY(vec3 p,float theta){
   )*p;
 }
 
-vec3 sdfRotateZ(vec3 p,float theta){
+vec3 RotateZ(vec3 p,float theta){
   float c=cos(theta);
   float s=sin(theta);
   
@@ -199,57 +189,52 @@ vec3 sdfRotateZ(vec3 p,float theta){
   )*p;
 }
 
-vec3 sdfTranslate(vec3 p,vec3 t){
+vec3 Translate(vec3 p,vec3 t){
   return p-t;
-}
-
-vec3 sdfScale(vec3 p,vec3 s)
-{
-  return(p/s)*s;
 }
 
 // === REPEAT OPERATORS ===
 
-vec3 sdfSimX(vec3 p){
+vec3 SimX(vec3 p){
   return vec3(abs(p.x),p.yz);
 }
 
-vec3 sdfSimY(vec3 p){
+vec3 SimY(vec3 p){
   return vec3(p.x,abs(p.y),p.z);
 }
 
-vec3 sdfSimZ(vec3 p){
+vec3 SimZ(vec3 p){
   return vec3(p.xy,abs(p.z));
 }
 
-vec3 sdfSimXY(vec3 p){
+vec3 SimXY(vec3 p){
   return vec3(abs(p.xy),p.z);
 }
-vec3 sdfSimXZ(vec3 p){
+vec3 SimXZ(vec3 p){
   return vec3(abs(p.x),p.y,abs(p.z));
 }
 
-vec3 sdfSimYZ(vec3 p){
+vec3 SimYZ(vec3 p){
   return vec3(p.x,abs(p.yz));
 }
 
-vec3 sdfSimXYZ(vec3 p){
+vec3 SimXYZ(vec3 p){
   return abs(p);
 }
 
 // === PRIMITIVES ===
-float sphere(vec3 p,float radius)
+float Sphere(vec3 p,float radius)
 {
   return length(p)-radius;
 }
 
-float box(vec3 p,vec3 size)
+float Box(vec3 p,vec3 size)
 {
   vec3 q=abs(p)-size;
   return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);
 }
 
-float cone( vec3 p, float angle, float h ){
+float Cone( vec3 p, float angle, float h ){
 
   float s = sin(angle);
   float c = cos(angle);
@@ -257,61 +242,49 @@ float cone( vec3 p, float angle, float h ){
   return max(dot(vec2(s,c),vec2(q,p.y)),-h-p.y);
 }
 
-float ellipsoid( vec3 p, vec3 r )
+float Ellipsoid( vec3 p, vec3 r )
 {
   float k0 = length(p/r);
   float k1 = length(p/(r*r));
   return k0*(k0-1.0)/k1;
 }
 
-float torus(vec3 p,vec2 size)
+float Torus(vec3 p,vec2 size)
 {
   vec2 q=vec2(length(p.xz)-size.x,p.y);
   return length(q)-size.y;
 }
 
-float cylinder(vec3 p,float h,float r)
+float Cylinder(vec3 p,float h,float r)
 {
   vec2 d=abs(vec2(length(p.xz),p.y))-vec2(r,h);
   return min(max((abs(vec2(length(p.xz),p.y))-vec2(r,h)).x,(abs(vec2(length(p.xz),p.y))-vec2(r,h)).y),0.)+length(max(abs(vec2(length(p.xz),p.y))-vec2(r,h),0.));
 }
 
-float line(in vec3 p,in vec3 start,in vec3 end,in float thickness){
+float Line(in vec3 p,in vec3 start,in vec3 end,in float thickness){
   vec3 ba=end-start;
   vec3 pa=p-start;
   float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);
   return length(pa-h*ba)-thickness;
 }
 
-float infCylinder(vec3 p,vec3 c)
+float InfCylinder(vec3 p,vec3 c)
 {
   return length(p.xz-c.xy)-c.z;
 }
 
 float plane(vec3 p,vec3 n,float h)
 {
-  // n must be normalized
   return dot(p,n)+h;
 }
 
 float sdf(vec3 p){
   float interp;
-  float esfera=sphere(p-vec3(.5),1.);
-  float cilindro=cylinder(p,1.,.5);
+  float esfera=Sphere(p-vec3(.5),1.);
+  float cilindro=Cylinder(p,1.,.5);
 
-  return sdfSmoothUnion(esfera,cilindro,.5,3.,interp);
+  return Union(esfera,cilindro,.5,3.,interp);
 }
-
-float checkersGradBox( in vec2 p, in vec2 dpdx, in vec2 dpdy )
-{
-    // filter kernel
-    vec2 w = abs(dpdx)+abs(dpdy) + 0.001;
-    // analytical integral (box filter)
-    vec2 i = 2.0*(abs(fract((p-0.5*w)*0.5)-0.5)-abs(fract((p+0.5*w)*0.5)-0.5))/w;
-    // xor pattern
-    return 0.5 - 0.5*i.x*i.y;                  
-}
-
 
 Surface map(vec3 p){
   
@@ -339,7 +312,7 @@ Surface map(vec3 p){
 
   vec3 col = mod(p.x, 5.0)>0.3 && mod(p.z, 5.0) > 0.3 ? vec3(0.4392, 0.4275, 0.4275) : vec3(0.2471, 0.2392, 0.2392);
   Surface suelo=Surface(
-    plane(sdfTranslate(p,vec3(0.,-0.5,0.)),vec3(0.,1.,0.),.5),
+    plane(Translate(p,vec3(0.,-0.5,0.)),vec3(0.,1.,0.),.5),
     Material(vec3(1.0, 1.0, 1.0),0.,col,3.,vec3(1.0, 1.0, 1.0),25.,vec3(.1),50.)
   );
 
@@ -347,17 +320,17 @@ Surface map(vec3 p){
     sdf(p),
     mat
   );
-
-  Surface esfera = Surface(sphere(p-vec3(3.0,0.0,3.0),3.), mat);
-  Surface cubo   = Surface(opRound(box(sdfRotateY(p+vec3(5.0,-.0,5.0), -1.0), vec3(2.0)),0.2), matBox);
-  Surface final=sdfSurfaceUnion(suelo,esfera);
-  final = sdfSurfaceUnion(final, cubo);
+float interp;
+  Surface esfera = Surface(Sphere(p-vec3(3.0,0.0,3.0),3.), mat);
+  Surface cubo   = Surface(Round(Box(RotateY(p+vec3(5.0,-.0,5.0), -1.0), vec3(2.0)),0.2), matBox);
+  Surface final=SurfaceUnion(suelo,esfera);
+  final = SurfaceUnion(final, cubo);
   return final;
 }
   
 Surface rayMarch(vec3 ro,vec3 rd,float start,float end){
   float depth=start;
-  Surface co;// closest object
+  Surface co;
   
   for(int i=0;i<MAX_MARCHING_STEPS;i++){
     vec3 p=ro+depth*rd;
@@ -371,24 +344,8 @@ Surface rayMarch(vec3 ro,vec3 rd,float start,float end){
   return co;
 }
 
-float calcAO(in vec3 pos,in vec3 nor)
-{
-  float occ = 0.0;
-  float sca = 1.0;
-  for(int i=0;i<5;i++)
-  {
-    float di  = .01 + .12*float(i)/4.0;
-    float sdf = map(pos + di*nor).sd;
-    occ+=(di-sdf)*sca;
-    sca*=.95;
-    if(occ>.35)break;
-  }
 
-  // return smoothstep(0.0, 0.12, 1.0-occ);
-  return clamp(1.0 - 3.0 *occ, 0.0, 1.0)*(0.5 + 0.5*nor.y);
-}
-
-float calcAO2(in vec3 pos, in vec3 norm){
+float calcAO(in vec3 pos, in vec3 norm){
   const float OCC_SAMPLES = 4.0;
   const float s = -OCC_SAMPLES;
   const float increment = 1.0/OCC_SAMPLES;
@@ -400,26 +357,7 @@ float calcAO2(in vec3 pos, in vec3 norm){
     ao -= pow(2.0,i*s)*(i-map(pos+i*norm).sd);
   }
 
-// return clamp(result, 0.0,1.0);
   return ao;
-}
-
-float calcShadow(in vec3 ro,in vec3 rd,in float mint,in float tmax, float k)
-{
-  float res = 1.0;
-    float t = mint;
-    for( int i=0; i<256 ; i++ )
-    {
-        float h = map(ro + rd*t).sd;
-        if( h<0.001 )
-            return 0.0;
-        // res = min( res, k*h/t );
-
-        if(res <= 0.001 || t>tmax)
-          return res;
-        t += h;
-    }
-    return res;
 }
 
 // https://iquilezles.org/articles/rmshadows
@@ -439,51 +377,8 @@ float calcSoftshadow(in vec3 ro,in vec3 rd,in float mint,in float tmax, float w)
     t+=clamp(h,.01,.2);
     if(res<.004||t>tmax)break;
   }
-  // res=clamp(res,0.,1.);
-  // return 0.25*(1.0+res)*(1.0+res)*(2.0-res);
+  
   return smoothstep(-1.0, 1.0, res);
-}
-
-vec3 lightingBlinn(vec3 pos, vec3 rd, vec3 nor, Surface s){
-  float lightPos[6], lightColor[6], lightSize[2];
-  lightPos[0] = 0.5; lightPos[1] = 0.4; lightPos[2] = -0.6;
-  lightPos[3] = -1.0; lightPos[4] = 1.0; lightPos[5] = -2.0;
-  lightColor[0] = 0.4; lightColor[1] = 0.4; lightColor[2] = 0.4;
-  lightColor[3] = 0.4; lightColor[4] = 0.4; lightColor[5] = 0.4;
-  lightSize[0] = 1.5; lightSize[1] = 10.;
-
-  const int nLights = 2;
-
-  vec3 result = u_ambientEnv;
-
-  float occ = 1.0;
-  #ifdef AO
-  occ= calcAO2(pos,nor);
-  #endif
-
-  for(int i=0; i<2; i++){
-    vec3 Li=normalize(vec3(lightPos[3*i], lightPos[3*i+1], lightPos[3*i+2]));
-    vec3 lColor = vec3(lightColor[3*i], lightColor[3*i+1], lightColor[3*i+2]);
-    vec3 h=normalize(Li-rd);
-    float NLi=max(0.,dot(nor,Li));
-    vec3 ri = reflect(-Li, nor);
-    // float NH=max(0.,dot(nor,h));
-    float RiV = max(0.0, dot(ri,-rd));
-
-    float shadow = 1.0;
-    #ifdef SHADOWS
-    shadow=calcSoftshadow(pos,Li,.02,2.5,6.0);
-    #endif
-    vec3 amb = s.mat.ka*s.mat.ambient;
-    vec3 dif=NLi*s.mat.kd*s.mat.diffuse;
-    vec3 spe=NLi*s.mat.ks*s.mat.specular*pow(RiV,s.mat.smoothness);
-
-    spe*=.04+.96*pow(clamp(1.-dot(h,Li),0.,1.),5.);// NO SE POR QUE
-
-    result += lColor*(amb+dif + spe)*occ*shadow;
-  }
-
-  return result;
 }
 
 vec3 lighting(vec3 pos, vec3 rd, vec3 nor, Surface s){
@@ -500,7 +395,7 @@ vec3 lighting(vec3 pos, vec3 rd, vec3 nor, Surface s){
 
   float occ = 1.0;
   #ifdef AO
-  occ= calcAO2(pos,nor);
+  occ= calcAO(pos,nor);
   #endif
 
   for(int i=0; i<2; i++){
@@ -518,7 +413,7 @@ vec3 lighting(vec3 pos, vec3 rd, vec3 nor, Surface s){
     vec3 dif=NLi*s.mat.kd*s.mat.diffuse;
     vec3 spe=NLi*s.mat.ks*s.mat.specular*pow(NH,s.mat.smoothness);
 
-    spe*=.04+.96*pow(clamp(1.-dot(h,Li),0.,1.),5.);// NO SE POR QUE
+    spe*=.04+.96*pow(clamp(1.-dot(h,Li),0.,1.),5.);
 
     result += lColor*(amb+dif + spe)*occ*shadow;
   }
@@ -526,67 +421,6 @@ vec3 lighting(vec3 pos, vec3 rd, vec3 nor, Surface s){
   return result;
 }
 
-// vec3 lightingBlinnPhong(vec3 p,vec3 n,vec3 ro,vec3 rd,Material mat){
-//   vec3 lightsPos[1];
-//   lightsPos[0]=vec3(4.,2.,2.);
-  
-//   vec3 lightsColor[1];
-//   lightsColor[0]=vec3(1.,1.,1.);
-//   float ambientOcc=calcAO(p,n);
-  
-//   // return vec3(shadows, 0.0,0.0);
-//   vec3 ambient=vec3(.03);
-//   vec3 emission=mat.emission;
-//   vec3 result=ambient+emission;
-  
-//   for(int i=0;i<1;i++){
-    
-//     vec3 Li=normalize(lightsPos[i]-p);
-//     vec3 H=normalize(Li-rd);// - porque v va del ojo a p, y rd al reves
-//     float LiN=dot(Li,n);
-//     float shadows=calcSoftshadow(p,Li,.02,2.5);
-    
-//     vec3 ambientReflection=mat.ka*mat.ambient;
-//     vec3 diffuseReflection=max(0.,LiN)*mat.kd*mat.diffuse*ambientOcc;
-//     vec3 specularReflection=max(0.,LiN)*pow(max(0.,dot(n,H)),mat.smoothness)*mat.ks*mat.specular*shadows;
-    
-//     result+=ambientReflection+diffuseReflection+specularReflection;
-//   }
-  
-//   return result;
-// }
-  
-// vec3 lightingPhong(vec3 p,vec3 n,vec3 eye,Material mat){
-//   vec3 ambient=vec3(.1);
-  
-//   vec3 lightsPos[2];
-//   lightsPos[0]=vec3(4.,2.,2.);
-  
-//   vec3 lightsColor[2];
-//   lightsColor[0]=vec3(1.,1.,1.);
-  
-//   vec3 ambientComponent=mat.ambient*ambient;
-//   vec3 Ip=mat.ambient*ambient;
-  
-//   for(int i=0;i<2;i++){
-//     vec3 Lm=normalize(lightsPos[i]-p);
-//     vec3 Rm=normalize(2.*(dot(Lm,n))*n-Lm);// reflect(-Lm, n)
-//     vec3 V=normalize(eye-p);
-    
-//     float LN=dot(Lm,n);
-//     float RV=dot(Rm,V);
-    
-//     if(LN<0.)// Light not visible
-//     Ip+=mat.emission;
-//     else if(RV<0.)// opposite direction as viewer, apply only diffuse
-//     Ip+=lightsColor[i]*(mat.diffuse*LN);
-//     else
-//     Ip+=lightsColor[i]*(mat.diffuse*LN+mat.specular*pow(RV,mat.smoothness));
-//   }
-  
-//   return Ip;
-// }
-  
 vec3 calcNormal(in vec3 p){
   return normalize(vec3(
     map(vec3(p.x+EPSILON,p.y,p.z)).sd-map(vec3(p.x-EPSILON,p.y,p.z)).sd,
@@ -595,11 +429,10 @@ vec3 calcNormal(in vec3 p){
   ));
 }
   
-
 mat3 camera(vec3 cameraPos,vec3 lookAtPoint){
-  vec3 cd=normalize(lookAtPoint-cameraPos);// camera direction
-  vec3 cr=normalize(cross(vec3(0.,1.,0.),cd));// camera right
-  vec3 cu=normalize(cross(cd,cr));// camera up
+  vec3 cd=normalize(lookAtPoint-cameraPos);
+  vec3 cr=normalize(cross(vec3(0.,1.,0.),cd));
+  vec3 cu=normalize(cross(cd,cr));
   
   return mat3(-cr,cu,-cd);
 }
@@ -611,7 +444,7 @@ void main()
 
   vec3 col=vec3(0.);
   vec3 eye=vec3(3.,3.,5.);
-  mat3 rot=(rotateY(u_cameraAng.x)*rotateX(u_cameraAng.y));
+  mat3 rot=(RotateY(u_cameraAng.x)*RotateX(u_cameraAng.y));
   eye=rot*eye*u_zoom;
   mat3 cam = camera(eye,lookAt);
   
@@ -620,34 +453,25 @@ void main()
     for( int m=0; m<AA; m++ )
     for( int n=0; n<AA; n++ )
     {
-      // version original
-      vec2 o = vec2(float(m),float(n)) / float(AA) - vec2(0.5);
-      vec2 uv = (-u_resolution.xy + 2.0*(gl_FragCoord.xy+o))/u_resolution.y;
-
-      // mi version
-      vec2 o2 = vec2(float(m) + 0.5, float(n) + 0.5) / float(AA) - vec2(0.5);
-      o = vec2(float(m),float(n)) / float(AA) - vec2(0.25);
-      //  uv = (-u_resolution.xy + 2.0*(gl_FragCoord.xy+o*0.5))/u_resolution.y;
-      uv=2.0*((gl_FragCoord.xy+o2)-.5*u_resolution.xy)/u_resolution.y;
+      vec2 o = vec2(float(m),float(n)) / float(AA) - vec2(0.25);
+      vec2 uv=2.0*((gl_FragCoord.xy+o)-.5*u_resolution.xy)/u_resolution.y;
   # else
-    vec2 uv = (-u_resolution.xy + 2.0*(gl_FragCoord.xy))/u_resolution.y;
+    vec2 uv = 2.0*((gl_FragCoord.xy)-.5*u_resolution.xy)/u_resolution.y;
   #endif
   
-  // gl_FragColor = vec4(gl_FragCoord.xy/u_resolution.y, 0.0,1.0);
-  // return;
-  vec3 rayDir=cam*normalize(vec3(uv,-1));// ray direction  
+ 
+  vec3 rayDir=cam*normalize(vec3(uv,-1));
 
-  Surface co=rayMarch(eye,rayDir,MIN_DIST,MAX_DIST);// closest object
+  Surface co=rayMarch(eye,rayDir,MIN_DIST,MAX_DIST);
   
   if(co.sd>MAX_DIST){
-    col+=backgroundColor;// NO HIT
+    col+=backgroundColor;
   }
   else{
-    vec3 p=eye+rayDir*co.sd;// HIT POINT
+    vec3 p=eye+rayDir*co.sd;
     vec3 normal=calcNormal(p);
     
     col += lighting(p, rayDir, normal, co);
-    // col += vec3(1.0,0.0, .0);
   }
   
   #if AA>1

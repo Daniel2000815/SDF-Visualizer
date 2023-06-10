@@ -78,8 +78,8 @@ function MyShader(props: {
 }) {
   const { savedPrimitives } = usePrimitiveStore(selector(), shallow);
 
-  const [zoom, setZoom] = useState(1.5);
-  const zoomIncrement = 0.1;
+  const [zoom, setZoom] = useState(0.5);
+  const zoomIncrement = 0.05;
 
   const dragging = useRef(false);
   const draggingLastPos = useRef([0, 0]);
@@ -87,6 +87,7 @@ function MyShader(props: {
   const [angle, setAngle] = useState([10, 0]);
   
   const [compileError, setCompileError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [shader, setShader] = useState<ShaderIdentifier>(
     CreateShader(props.sdf, props.primitives).helloGL
   );
@@ -98,7 +99,9 @@ function MyShader(props: {
       if (props.onError) props.onError(e.message);
 
       console.warn(`ERROR COMPILING SHADER ${props.sdf}: `, e.message);
+      console.log(fs(props.sdf, String(savedPrimitives).concat(props.primitives)));
       setCompileError(true);
+      setErrorMsg(e.message);
       return true;
     };
 
@@ -153,7 +156,7 @@ function MyShader(props: {
       let difY = y - draggingLastPos.current[1];
       difX *= 2.0;
 
-      const newAng = [angle[0] + difX, clamp(angle[1] + difY, -1.5, 1.5)];
+      const newAng = [angle[0] + difX, clamp(angle[1] + 2*difY, -1.5, 1.5)];
       setAngle(newAng);
       draggingLastPos.current = mousePos.current;
     }
@@ -180,19 +183,20 @@ function MyShader(props: {
     dragging.current = false;
   };
 
-  const handleScroll = (e: any) => {
-    e.preventDefault();
-    console.log("SCROLL", e.deltaY);
-    if (e.deltaY > 0) {
-      setZoom(zoom + zoomIncrement);
-    } else if (zoom > zoomIncrement) {
-      setZoom(zoom - zoomIncrement);
-    }
-  };
 
+  const handleWheelDown = (e:any) => {
+    console.log(e);
+    if(zoom > zoomIncrement) setZoom(zoom - zoomIncrement);
+  }
+
+  const handleWheelUp = (e:any) => {
+    console.log(e);
+    if(zoom < 100) setZoom(zoom + zoomIncrement);
+  }
 
   return <div>
-    {compileError && <UseAnimations
+    {compileError && 
+    <UseAnimations
           size={props.width ? 0.6 * props.width : 24}
           animation={alertCircle}
         />}
@@ -207,8 +211,9 @@ function MyShader(props: {
         <ReactScrollWheelHandler
           timeout={-1}
           preventScroll={true}
-          upHandler={() => setZoom(zoom + zoomIncrement)}
-          downHandler={() => setZoom(zoom - zoomIncrement)}        >
+          disableSwipeWithMouse={true}
+          upHandler={(e)=>handleWheelUp(e)}
+          downHandler={(e) => handleWheelDown(e)}>
           <Surface
             
             visitor={visitor}
@@ -220,14 +225,21 @@ function MyShader(props: {
             
               shader={shader}
               uniforms={{
-                u_resolution: [props.width, props.height],
-                // u_mouse: [0, 0],
+                u_ambient: props.material.ambient,
                 u_specular: props.material.specular,
                 u_diffuse: props.material.diffuse,
-                u_ambient: props.material.ambient,
+                u_emission: [0.02, 0.02, 0.02],
+                u_ka: 0.4,
+                u_ks: 30,
+                u_kd: 2,
                 u_smoothness: props.material.smoothness,
+                u_ambientEnv: [0.01, 0.01, 0.01],
                 u_cameraAng: angle,
                 u_zoom: zoom,
+                u_resolution: [props.width, props.height],                
+                u_lightsPos: [0.5, 0.4, -0.6, -1.0, 1.0,-2.0, 0,0,0,0,0,0],
+                u_lightsColor: [0.4, 0.4,0.4,0.4, 0.4,0.4,0,0,0,0,0,0],
+                u_lightsSize: [1.5, 10],
               }}
             />
           </Surface>

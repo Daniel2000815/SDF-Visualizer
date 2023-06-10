@@ -46,12 +46,12 @@ export function BooleanNode(props: { id: string; data: any }) {
     }
     if (keys >= 2) {
       console.log("KEYS ", keys);
-      newSdf = `sdfSmooth${operation}(${it.next().value}, ${it.next().value}, ${smooth.toFixed(4)}, ${n.toFixed(4)})`;
+      newSdf = `${operation}(${it.next().value}, ${it.next().value}, ${smooth.toFixed(4)}, ${n.toFixed(4)}, interp)`;
 
       // Add the rest of inputs
       for (let i = 0; i < keys - 2; i++) {
         console.log("new");
-        newSdf = `sdfSmooth${operation}(${
+        newSdf = `${operation}(${
           it.next().value
         }, ${newSdf}, ${smooth.toFixed(4)}, ${n.toFixed(4)})`;
       }

@@ -3,8 +3,10 @@ import { operators } from "./operators";
 export const fs = (sdf, primitives) => {
   return `
     precision mediump float;
-    varying vec2 uv;
-
+    
+    #define AO  
+    #define SHADOWS
+    #define AA 2
 
     // Constants
     const int MAX_MARCHING_STEPS=255;
@@ -13,240 +15,233 @@ export const fs = (sdf, primitives) => {
     const float PRECISION=.0001;
     const float EPSILON=.0005;
     const float PI=3.14159265359;
-    const float DEG_TO_RAD = PI / 180.0;
 
-    // Camera control
-    // vec2 cameraAng = vec2(0.5, 0.5);
-    // bool isDragging = false;
-    // vec2 startDraggingPos;
-
-    uniform vec3 u_specular;
-    uniform vec3 u_diffuse;
-    uniform vec3 u_ambient;
+    // === APP UNIFORMS ===
+    uniform vec3  u_ambient;
+    uniform vec3  u_specular;
+    uniform vec3  u_diffuse;
+    uniform vec3  u_emission;
+    uniform float u_ka;
+    uniform float u_ks;
+    uniform float u_kd;
     uniform float u_smoothness;
-
-    uniform vec2 u_resolution;
-    // uniform vec2 u_mouse;
-    uniform vec2 u_cameraAng;
+    uniform vec3  u_ambientEnv;
+    uniform vec2  u_cameraAng;
     uniform float u_zoom;
-
+    uniform vec2  u_resolution;
+    uniform float u_lightsPos[12];
+    uniform float u_lightsColor[12];
+    uniform vec4  u_lightsSize;
+    
+    // == TYPE DECLARATIONS ==
     struct Material
     {
-    vec3 specular;
-    vec3 diffuse;
-    vec3 ambient;
-    float smoothness;
+      vec3 ambient;
+      float ka;
+      vec3 diffuse;
+      float kd;
+      vec3 specular;
+      float ks;
+      vec3 emission;
+      float smoothness;
     };
 
     struct Surface{
-    float sd;// signed distance value
-    Material mat;
+      float sd;
+      Material mat;
     };
 
-    // Rotate around a circular path
-    mat2 rotate2d(float theta){
-        float s = sin(theta),c=cos(theta);
-        return mat2(c,-s,s,c);
+    // == TO ROTATE VIEW ==
+    mat3 RotateX(float theta){
+      float c=cos(theta);
+      float s=sin(theta);
+      return mat3(
+        vec3(1.,0.,0.),
+        vec3(0.,c,-s),
+        vec3(0.,s,c)
+      );
     }
-
     
-
-    // Identity matrix.
-    mat3 identity(){
-        return mat3(
-            vec3(1,0,0),
-            vec3(0,1,0),
-            vec3(0,0,1)
-        );
-    }
-
-    mat3 rotateX(float theta){
-        float c=cos(theta);
-        float s=sin(theta);
-        return mat3(
-            vec3(1.,0.,0.),
-            vec3(0.,c,-s),
-            vec3(0.,s,c)
-        );
-    }
-
-    // Rotation matrix around the Y axis.
-    mat3 rotateY(float theta){
-        float c=cos(theta);
-        float s=sin(theta);
-        return mat3(
-            vec3(c,0.,s),
-            vec3(0.,1.,0.),
-            vec3(-s,0.,c)
-        );
-    }
-
-    // Rotation matrix around the Z axis.
-    mat3 rotateZ(float theta){
-        float c=cos(theta);
-        float s=sin(theta);
-        return mat3(
-            vec3(c,-s,0.),
-            vec3(s,c,0.),
-            vec3(0.,0.,1.)
-        );
+    mat3 RotateY(float theta){
+      float c=cos(theta);
+      float s=sin(theta);
+      return mat3(
+        vec3(c,0.,s),
+        vec3(0.,1.,0.),
+        vec3(-s,0.,c)
+      );
     }
 
     ${operators()}
     ${primitives}
 
-  
-    Surface minWithColor(Surface obj1,Surface obj2){
-        if(obj2.sd<obj1.sd)return obj2;
-        return obj1;
-    }
-    
     float sdf(vec3 p){
-        float x = p.x;
-        float y = p.y;
-        float z = p.z;
-        
-        return ${sdf};
+      float x = p.x;
+      float y = p.y;
+      float z = p.z;
+      float interp;
+      
+      return ${sdf};
     }
-  
-  Surface map(vec3 p){
-    Material mat = Material(u_specular, u_diffuse, u_ambient, u_smoothness);
-    float d = sdf(p);
-    
-    Surface co = Surface(d, mat);
-    
-    return co;
+
+    Surface map(vec3 p){
+      Material mat = Material(
+        u_ambient,    // ambient
+        u_ka,         // ka
+        u_diffuse,    // diffuse
+        u_kd,         // kd
+        u_specular,   // specular
+        u_ks,         // ks
+        u_emission,   // emission
+        u_smoothness  // smoothness
+      );
+      float d = sdf(p);
+      
+      return Surface(d, mat);      
     }
-    
-    vec3 grad( in vec3 p )
-    {
-    return vec3(
-        map(vec3(p.x+EPSILON,p.y,p.z)).sd - map(vec3(p.x-EPSILON,p.y,p.z)).sd,
-        map(vec3(p.x,p.y+EPSILON,p.z)).sd - map(vec3(p.x,p.y-EPSILON,p.z)).sd,
-        map(vec3(p.x,p.y,p.z+EPSILON)).sd - map(vec3(p.x,p.y,p.z-EPSILON)).sd
-    );
-    }
-    
-    mat3 camera(vec3 cameraPos,vec3 lookAtPoint){
-    vec3 cd = normalize(lookAtPoint-cameraPos);      // camera direction
-    vec3 cr = normalize(cross(vec3(0.,1.,0.),cd)); // camera right
-    vec3 cu = normalize(cross(cd,cr));               // camera up
-    
-    return mat3(-cr,cu,-cd);
-    }
-    
+
     Surface rayMarch(vec3 ro,vec3 rd,float start,float end){
-        float depth = start;
-        Surface co; // closest object
-        
-        for(int i=0; i<MAX_MARCHING_STEPS; i++){
-            vec3 p = ro + depth*rd;
-            co = map(p);
-            depth += co.sd;
-            if(co.sd<PRECISION||depth>end)  break;
-        }
-        
-        co.sd = depth;
-        
-        return co;
+      float depth=start;
+      Surface co;
+      
+      for(int i=0;i<MAX_MARCHING_STEPS;i++){
+        vec3 p=ro+depth*rd;
+        co=map(p);
+        depth+=co.sd;
+        if(co.sd<PRECISION||depth>end)break;
+      }
+      
+      co.sd=depth;
+      
+      return co;
     }
-  
-    vec3 lighting(vec3 p,vec3 n,vec3 eye,Material mat){
-      vec3 ambient = vec3(.5);
-      
-      vec3 lights_pos[2];
-      lights_pos[0] = vec3(4.,2.,2.);
-      lights_pos[1] = vec3(-4.,-2.,-2.);
-      
-      vec3 lights_color[2];
-      lights_color[0] = vec3(1.,1.,1.);
-      lights_color[1] = vec3(1.,1.,1.);
-      
-      vec3 Ip = mat.ambient*ambient;
-      
-      for(int i=0;i<2;i++){
-          //vec3 Lm = normalize(lights_pos[i] - p);
-          vec3 Lm = normalize(lights_pos[i]);
-          vec3 Rm = normalize(2.0*(dot(Lm,n))*n - Lm); // reflect(-Lm, n)
-          vec3 V  = normalize(eye - p);
-          
-          float LN = dot(Lm,n);
-          float RV = dot(Rm,V);
-          
-          if(LN<0.) // Light not visible
-          Ip+=vec3(0.,0.,0.);
-          else if(RV<0.)// opposite direction as viewer, apply only diffuse
-          Ip+=lights_color[i]*(mat.diffuse*LN);
-          else
-          Ip+=lights_color[i]*(mat.diffuse*LN+mat.specular*pow(RV,mat.smoothness));
+    
+    
+    float calcAO(in vec3 pos, in vec3 norm){
+      const float OCC_SAMPLES = 4.0;
+      const float s = -OCC_SAMPLES;
+      const float increment = 1.0/OCC_SAMPLES;
+    
+      float ao = 1.0;
+    
+      for(float i = increment; i < 1.0; i+=increment)
+      {
+        ao -= pow(2.0,i*s)*(i-map(pos+i*norm).sd);
       }
-      
-      return Ip;
-      }
-  
-      vec3 calcNormal(in vec3 p){
-        return normalize(vec3(
-            map(vec3(p.x+EPSILON,p.y,p.z)).sd - map(vec3(p.x-EPSILON,p.y,p.z)).sd,
-            map(vec3(p.x,p.y+EPSILON,p.z)).sd - map(vec3(p.x,p.y-EPSILON,p.z)).sd,
-            map(vec3(p.x,p.y,p.z+EPSILON)).sd - map(vec3(p.x,p.y,p.z-EPSILON)).sd
-        ));
-        }
-
-        vec3 ray_dir( float fov, vec2 size, vec2 pos ) {
-          vec2 xy = pos - size * 0.5;
-      
-          float cot_half_fov = tan( ( 90.0 - fov * 0.5 ) * DEG_TO_RAD );	
-          float z = size.y * 0.5 * cot_half_fov;
-          
-          return normalize( vec3( xy, -z ) );
-      }
-  
-void main()
+    
+      return ao;
+    }
+    
+    // https://iquilezles.org/articles/rmshadows
+    float calcSoftshadow(in vec3 ro,in vec3 rd,in float mint,in float tmax, float w)
     {
-        vec2 uv = (gl_FragCoord.xy - 0.5*u_resolution.xy) / u_resolution.y;
-        // vec2 mouseUV = vec2(0.5);
-        // mouseUV = u_mouse.xy/u_resolution.xy;  // [0,1]
-
-
-        vec3 backgroundColor = vec3(.835, 1.0, 1.0);
-        vec3 col    = vec3(0.0);
-        vec3 lookAt = vec3(0.0);
-        vec3 eye    = vec3(0,0,5.0);
-        // default ray dir
-        vec3 dir = ray_dir( 45.0, u_resolution.xy, gl_FragCoord.xy );
-        dir=camera(eye,lookAt)*normalize(vec3(uv,-1));
-        // default ray origin
-        
-
-        // ray marching
-       
-
-        float cameraRadius = 10.0;
-        // rotate camera
-        mat3 rot = (rotateY(u_cameraAng.x)*rotateX(u_cameraAng.y));
-        dir = rot * dir;
-        eye = rot * eye * u_zoom;
-        //eye = (rotateY(cameraAng.x)*rotateX(cameraAng.y)) * eye * cameraRadius + lookAt;
-        //eye =  eye * cameraRadius + lookAt;
-        // eye.yz =   rotate2d( u_cameraAng.x ) * eye.yz * cameraRadius + vec2(lookAt.y, lookAt.z);
-        // eye.xz =  rotate2d( u_cameraAng.y ) * eye.xz + vec2(lookAt.x, lookAt.z);
-        
-        //vec3 rayDir = camera(eye, lookAt) * normalize(vec3(uv,-1));// ray direction
-        
-        Surface co = rayMarch(eye, dir, MIN_DIST, MAX_DIST);// closest object
-        
-        if(co.sd > MAX_DIST){
-            col = backgroundColor;  // ray didn't hit anything
-        }
-        else{
-            vec3 p = eye + dir*co.sd;  // point from ray marching
-            vec3 normal = calcNormal(p);
-            
-            col = lighting(p, normal, eye, co.mat);
-        }
-        
-        gl_FragColor = vec4(col, 1.0);
-        return;
+      // bounding volume
+      float tp=(.8-ro.y)/rd.y;if(tp>0.)tmax=min(tmax,tp);
+      
+      float res =1.0;
+      float t = mint;
+    
+      for(int i=0;i<24;i++)
+      {
+        float h=map(ro+rd*t).sd;
+        float s=clamp(w*h/t,0.,1.);
+        res=min(res,s);
+        t+=clamp(h,.01,.2);
+        if(res<.004||t>tmax)break;
+      }
+      
+      return smoothstep(-1.0, 1.0, res);
     }
+    
+    vec3 lighting(vec3 pos, vec3 rd, vec3 nor, Surface s){    
+      vec3 result = u_ambientEnv;
+    
+      float occ = 1.0;
+      #ifdef AO
+      occ= calcAO(pos,nor);
+      #endif
+    
+      for(int i=0; i<4; i++){
+        vec3 Li=normalize(vec3(u_lightsPos[3*i], u_lightsPos[3*i+1], u_lightsPos[3*i+2]));
+        vec3 lColor = vec3(u_lightsColor[3*i], u_lightsColor[3*i+1], u_lightsColor[3*i+2]);
+        vec3 h=normalize(Li-rd);
+        float NLi=max(0.,dot(nor,Li));
+        float NH=max(0.,dot(nor,h));
+    
+        float shadow = 1.0;
+        #ifdef SHADOWS
+        shadow=calcSoftshadow(pos,Li,.02,2.5,u_lightsSize[i]);
+        #endif
+        vec3 amb = s.mat.ka*s.mat.ambient;
+        vec3 dif=NLi*s.mat.kd*s.mat.diffuse;
+        vec3 spe=NLi*s.mat.ks*s.mat.specular*pow(NH,s.mat.smoothness);
+    
+        spe*=.04+.96*pow(clamp(1.-dot(h,Li),0.,1.),5.);
+    
+        result += lColor*(amb+dif + spe)*occ*shadow;
+      }
+    
+      return result;
+    }
+    
+    vec3 calcNormal(in vec3 p){
+      return normalize(vec3(
+        map(vec3(p.x+EPSILON,p.y,p.z)).sd-map(vec3(p.x-EPSILON,p.y,p.z)).sd,
+        map(vec3(p.x,p.y+EPSILON,p.z)).sd-map(vec3(p.x,p.y-EPSILON,p.z)).sd,
+        map(vec3(p.x,p.y,p.z+EPSILON)).sd-map(vec3(p.x,p.y,p.z-EPSILON)).sd
+      ));
+    }
+      
+    mat3 camera(vec3 cameraPos,vec3 lookAtPoint){
+      vec3 cd=normalize(lookAtPoint-cameraPos);
+      vec3 cr=normalize(cross(vec3(0.,1.,0.),cd));
+      vec3 cu=normalize(cross(cd,cr));
+      
+      return mat3(-cr,cu,-cd);
+    }
+    
+    void main()
+    {
+      const vec3 backgroundColor=vec3(0.6784, 0.8824, 0.9333);
+      const vec3 lookAt=vec3(0.);
+    
+      vec3 col=vec3(0.);
+      vec3 eye=vec3(3.,3.,5.);
+      mat3 rot=(RotateY(u_cameraAng.x)*RotateX(u_cameraAng.y));
+      eye=rot*eye*u_zoom;
+      mat3 cam = camera(eye,lookAt);
+    
+      #if AA>1
+        for( int m=0; m<AA; m++ )
+        for( int n=0; n<AA; n++ )
+        {
+          vec2 o = vec2(float(m),float(n)) / float(AA) - vec2(0.25);
+          vec2 uv=((gl_FragCoord.xy+o) - 0.5*u_resolution.xy) / u_resolution.y;
+      # else
+        vec2 uv = (gl_FragCoord.xy - 0.5*u_resolution.xy) / u_resolution.y;
+      #endif
+      
+      vec3 rayDir=cam*normalize(vec3(uv,-1));
+      Surface co=rayMarch(eye,rayDir,MIN_DIST,MAX_DIST);
+      
+      if(co.sd>MAX_DIST){
+        col+=backgroundColor;
+      }
+      else{
+        vec3 p=eye+rayDir*co.sd;
+        vec3 normal=calcNormal(p);
+        
+        col += lighting(p, rayDir, normal, co);
+      }
+      
+      #if AA>1
+        }
+        col /= float(AA*AA);
+      #endif
+      
+      gl_FragColor=vec4(col,1.);
+      return;
+    }
+
     `;
 };

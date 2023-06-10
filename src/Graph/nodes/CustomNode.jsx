@@ -26,6 +26,7 @@ export function CustomNode({
   useEffect(()=>{
     console.log("WHAT X2 ", dropdownOptions);
   }, [dropdownOptions])
+  
   return (
     <div
       className={tw(`rounded-lg bg-white shadow-xl border-[${theme?.primary}] border`)}
@@ -79,7 +80,7 @@ export function CustomNode({
         return (
           <div key={`${id}_targetHandleContainer_${i}`}>
             <CustomHandle
-            theme={theme}
+              theme={theme}
               nodeId={id}
               inputNumber={`${i}`}
               type="target"

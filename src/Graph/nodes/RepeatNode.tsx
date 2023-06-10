@@ -42,22 +42,23 @@ export function RepeatNode(props: { id: string; data: any }) {
     // let input = props.data.inputs[Object.keys(props.data.inputs)[0]];
 
     if (input) {
-      if (operation.includes("Simetry")) {
+      const op = operation.replace("_","");
+      if (op.includes("Simetry")) {
 
-        newSdf = input.replaceAll("p," , `${operation}(p),` );
+        newSdf = input.replaceAll("p," , `${op}(p),` );
         
       } 
       else if(operation === RepeatOperations.Finite_Repeat){
         newSdf = input.replaceAll(
             "p,",
-            `${operation}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0].toFixed(4)}, ${repeatVal[1].toFixed(4)}, ${repeatVal[2].toFixed(4)})),`
+            `${op}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0].toFixed(4)}, ${repeatVal[1].toFixed(4)}, ${repeatVal[2].toFixed(4)})),`
         );
       } 
       else if(operation === RepeatOperations.Infinite_Repeat){
         console.log("inf");
         newSdf = input.replaceAll(
             "p,",
-            `${operation}(p, ${separation.toFixed(4)}),`
+            `${op}(p, ${separation.toFixed(4)}),`
         );
       }
     }
