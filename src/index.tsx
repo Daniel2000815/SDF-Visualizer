@@ -35,13 +35,16 @@ import {
   Grid,
   Badge,
 } from "@nextui-org/react";
-
+import { defaultMaterial } from "./Shader/defaultMaterial";
 import { createTheme, NextUIProvider } from "@nextui-org/react";
 import { MainComponent } from "./Graph/MainComponent";
 import { SurfacePage } from "./SurfacePage/SurfacePage";
 import help from "react-useanimations/lib/help";
 import UseAnimations from "react-useanimations";
-import { graphControls, GraphHelpText, SurfaceHelpText } from "./Utils/help";
+import { graphControls, GraphHelpText, SurfaceHelpText, PlaygroundHelpText } from "./Utils/help";
+import { Shader } from "./Shader/Shader";
+import { FPS } from "./Playground/FPSMeter/FPS";
+import { Playground } from "./Playground/Playground";
 
 const lightTheme = createTheme({
   type: "light", // it could be "light" or "dark"
@@ -125,7 +128,7 @@ function App() {
 
         <Modal.Body>
           <Text>
-            {tab===0 ? <GraphHelpText/> : <SurfaceHelpText/>}
+            {tab===0 ? <GraphHelpText/> : tab===1 ? <SurfaceHelpText/> : <PlaygroundHelpText/>}
           </Text>
           {tab==0 &&
           <Grid.Container gap={1}>
@@ -168,6 +171,9 @@ function App() {
           <Navbar.Link isActive={tab === 1} onClick={() => setTab(1)}>
             Surfaces
           </Navbar.Link>
+          <Navbar.Link isActive={tab === 2} onClick={() => setTab(2)}>
+            Playground
+          </Navbar.Link>
         </Navbar.Content>
         <Navbar.Content hideIn="xs">
           <Navbar.Item>
@@ -185,6 +191,7 @@ function App() {
       
         {tab === 0 && <MainComponent />}
         {tab === 1 && <SurfacePage />}
+        {tab == 2 && <Playground/>}
         <Help />
     </NextUIProvider>
   );

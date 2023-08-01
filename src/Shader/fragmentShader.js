@@ -6,7 +6,7 @@ export const fs = (sdf, primitives) => {
     
     #define AO  
     #define SHADOWS
-    #define AA 2
+    #define AA 3
 
     // Constants
     const int MAX_MARCHING_STEPS=255;

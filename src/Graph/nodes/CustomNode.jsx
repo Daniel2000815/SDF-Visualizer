@@ -25,7 +25,8 @@ export function CustomNode({
   dropdownKeys,
   defaultDropdpwnOption,
   onChangeDropdownOption,
-  theme
+  theme,
+  currDropddownOption=""
 }) {
   const [showMore, setShowMore] = React.useState(true);
   const { updateSelectedSdf } = useStore(selector(), shallow);
@@ -51,7 +52,7 @@ export function CustomNode({
           `rounded-t-md px-2 py-1 bg-[${theme?.primary}] text-white text-sm`
         )}
       >
-        {title}
+        {showMore ? title : currDropddownOption.replace("_", " ")}
       </p>
       {showMore && (
         <div className={`${tw("flex flex-col w-full items-center px-2 space-y-2  pt-1 pb-4")} nodrag`}>

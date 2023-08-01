@@ -29,6 +29,16 @@ export const surfaceFunctions: Record<string, string> = {
     );
   }
 
+  export function PlaygroundHelpText() {
+    return (
+      
+        <Text>
+        This is an example scene where you can play around with the lights and materials of the objects, as well as see the impact in the final image that techniques such as antialiasing or ambient oclussion have.
+        </Text>
+        
+    );
+  }
+
 export function SurfaceHelpText() {
   return (
     <>

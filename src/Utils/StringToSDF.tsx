@@ -86,31 +86,23 @@ export function ImplicitToSDF(implicit: string, parameters: Parameter[], evaluat
   let res = "";
 
   try {
-    // console.log("WTF_ ");
     f = nerdamerTS(implicit).toString();
-    // console.log("WTF_ "+ f.toString());
   } catch (error: any) {
     error = error.message.split("at ")[0];
 
-    // console.log(`ERROR PARSING EQUATION ${implicit}`);
     throw new Error(`ERROR PARSING EQUATION ${implicit}`);
   }
 
-  // console.log("WTF");
   const dfdx = nerdamer.diff(f, "x", 1);
   const dfdy = nerdamer.diff(f, "y", 1);
   const dfdz = nerdamer.diff(f, "z", 1);
   const norm = nerdamer(`sqrt((${dfdx})^2 + (${dfdy})^2 + (${dfdz})^2)`);
-  console.log("DECIMAL", norm.toDecimal());
   if (norm.toString() === "0") {
-    // console.log("ZERO")
     throw new Error("NORM CAN'T BE 0");
   }
   else{
-    // console.log("NORM: ", norm.toString())
     let sdf = nerdamer(`(${f})/(${norm})`);
     var x = nerdamerTS.tree(sdf.toString());
-    // console.log("TEST,", sdf.toString());
     res = StringToSDF(x, parameters, evaluate);
   }
 

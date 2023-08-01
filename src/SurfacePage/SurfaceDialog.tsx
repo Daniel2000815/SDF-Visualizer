@@ -310,13 +310,9 @@ export function SurfaceDialog(props: {
   };
 
   function handleShaderError(e: string) {
-    const regex = /ERROR: 0:255: ([^\n]+)/;
-    const match = e.match(regex);
-    const errorMessage = match ? match[1] : "No error message found";
+    console.log(e);
 
-    console.log(errorMessage);
-
-    setMathErrorMsg([errorMessage, "", ""]);
+    setMathErrorMsg([e, "", ""]);
   }
 
   const displayInput = () => {

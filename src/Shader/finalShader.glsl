@@ -6,6 +6,7 @@ precision mediump float;
 #define SHADOWS
 #define AA 1
 
+uniform float u_time;
 // Constants
 const int MAX_MARCHING_STEPS=255;
 const float MIN_DIST=0.;
@@ -444,7 +445,7 @@ void main()
 
   vec3 col=vec3(0.);
   vec3 eye=vec3(3.,3.,5.);
-  mat3 rot=(RotateY(u_cameraAng.x)*RotateX(u_cameraAng.y));
+  mat3 rot=(RotateY(u_time)*RotateX(0.5 + 0.5 * sin(6.28 * 0.5 * u_time)) );
   eye=rot*eye*u_zoom;
   mat3 cam = camera(eye,lookAt);
   

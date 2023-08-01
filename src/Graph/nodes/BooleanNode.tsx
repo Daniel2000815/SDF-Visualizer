@@ -53,7 +53,7 @@ export function BooleanNode(props: { id: string; data: any }) {
         console.log("new");
         newSdf = `${operation}(${
           it.next().value
-        }, ${newSdf}, ${smooth.toFixed(4)}, ${n.toFixed(4)})`;
+        }, ${newSdf}, ${smooth.toFixed(4)}, ${n.toFixed(4)}, interp)`;
       }
     }
 
@@ -84,6 +84,7 @@ export function BooleanNode(props: { id: string; data: any }) {
       onChangeDropdownOption={setOperation}
       nInputs={Math.max(2, props.data.inputs.size + 1)}
       theme={theme}
+      currDropddownOption={operation}
     >
       {/* UPDATE: {needsToUpdate?.toString()} */}
         {/* SDF: {props.data.sdf} */}

@@ -100,6 +100,7 @@ export function RepeatNode(props: { id: string; data: any }) {
       onChangeDropdownOption={(v:string) => setOperation(v.replace(" ", "_"))}
       nInputs={1}
       theme={theme}
+      currDropddownOption={operation}
     >
       {/* UPDATE: {needsToUpdate.toString()} */}
       {/* SDF: {props.data.sdf} */}

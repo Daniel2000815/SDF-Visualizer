@@ -90,11 +90,21 @@ function MyShader(props: {
     const visitor = new Visitor();
 
     visitor.onSurfaceDrawError = (e: Error) => {
-      if (props.onError) props.onError(e.message);
+      
 
       console.warn(`ERROR COMPILING SHADER ${props.sdf}: `, e.message);
+      const regex = /ERROR: \d+:\d+:(.*)/;
+
+      // Aplicar la expresión regular al mensaje de error
+      const match = e.message.match(regex);
+      let errorMsg = "Unknown error"
+
+      if (match) {
+        errorMsg = match[1].trim();
+      } 
       setCompileError(true);
-      setErrorMsg(e.message);
+      setErrorMsg(errorMsg);
+      if (props.onError) props.onError(errorMsg);
       return true;
     };
 
@@ -103,12 +113,8 @@ function MyShader(props: {
       if(compileError === false)
         return;
 
-      console.log("as");
       setCompileError(false);
     };
-
-  
- 
 
   useEffect(() => {
     if(props.sdf === ""){
@@ -217,6 +223,7 @@ function MyShader(props: {
             visitor={visitor}
             width={props.width || 100}
             height={props.height || 100}
+            style={{border: "red"}}
           >
             <Node
             

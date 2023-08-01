@@ -102,6 +102,7 @@ export function DeformNode(props: { id: string; data: any }) {
       onChangeDropdownOption={setOperation}
       nInputs={1}
       theme={theme}
+      currDropddownOption={operation}
     >
 
         {/* UPDATE: {needsToUpdate.toString()}
