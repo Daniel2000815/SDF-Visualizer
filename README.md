@@ -1,10 +1,8 @@
-# TFG
-
-## Aplicación
+# SDF Visualizer
 
 ### Ejecución
 
-- Visitar [GitHub Pages](https://daniel2000815.github.io/SDF-Visualizer/).
+- Visitar [GitHub Pages](https://daniel2000815.github.io/SDF-Visualizer/) o bien abrir [index.html](./build/index.html) para ejecutar en local.
 
 ### Estructura
 
