@@ -1,10 +1,13 @@
 import {Polynomial} from "./Polynomial";
+import nerdamer from "nerdamer-ts";
+import Fraction from "./Fraction";
+
 
 /**
  * Represents a monomial in the ring R<t,x,y,z> or any other variables specified
  */
 export class Monomial {
-    private coef: number;
+    private coef: Fraction;
     private exp: Float64Array;
     private vars : string[]; 
   
@@ -14,12 +17,18 @@ export class Monomial {
      * @param exp Exponent
      * @param variables Variables of the ideal to which the monomial belongs
      */
-    constructor(coef: number = 0, exp: Float64Array = Float64Array.from([0,0,0,0]), vars: string[] = ["t","x","y","z"]) {
+    constructor(coef: number | Fraction = 0, exp: Float64Array = Float64Array.from([0,0,0,0]), vars: string[] = ["t","x","y","z"]) {
+
+      // let fracStr = nerdamer(`${coef}`).evaluate().text('fractions');
+      // let partes = fracStr.split("/");
+
+     
       if(exp.length !== vars.length){
         throw new Error("EXPONENT NOT MATCHING VARIABLES");
       }
+
   
-      this.coef = coef;
+      this.coef = typeof(coef) === "number" ? new Fraction(coef,1) : coef;
       this.exp = exp;
       this.vars = vars;
     }
@@ -40,12 +49,34 @@ export class Monomial {
      * Insert new variables before the existing ones to the ring and updates the exponent
      * @param newVars variables to add
      */
-    insertVariables(newVars : string[]){
+    insertVariables(newVars : string[], pos: number = 0){
+
       newVars = [...new Set(newVars)];
       const varsToAdd = newVars.filter(v => !this.vars.includes(v));
+      if(pos > this.vars.length)
+        throw new Error("INVALID INSERT POSITION FOR VARIABLE")
 
-      this.vars = varsToAdd.concat(this.vars);
-      this.exp = Float64Array.from(varsToAdd.map(v=>0).concat(Array.from(this.exp)));
+      // this.vars = varsToAdd.concat(this.vars);
+
+      let exp = []
+      let vars = []
+
+      for(let i=0; i<this.exp.length + varsToAdd.length; i++){
+        if(i<pos){
+          exp[i] = this.exp[i]
+          vars[i] = this.vars[i]
+        }
+        else if(i>=pos && i<pos+varsToAdd.length){
+          exp[i] = 0
+          vars[i] = varsToAdd[i-pos]
+        }
+        else{
+          exp[i] = this.exp[i - varsToAdd.length]
+          vars[i] = this.vars[i - varsToAdd.length]
+        }
+      }
+      this.exp = Float64Array.from(exp);
+      this.vars = vars;
     }
 
     /**
@@ -60,21 +91,6 @@ export class Monomial {
       let newExp = this.exp.filter((e,idx) => !varsToRemove.includes(this.vars[idx]));
       this.vars = newVars;
       this.exp = newExp;
-    }
-
-    /**
-     * @brief Monomial 0 in <t,x,y,z>
-     */
-    static zero(): Monomial {
-      return new Monomial(0);
-    }
-  
-
-    /**
-     * @brief Monomial 1 in <t,x,y,z>
-     */
-    static one(): Monomial {
-      return new Monomial(1);
     }
   
     /**
@@ -126,8 +142,11 @@ export class Monomial {
      * 
      * @param coef New coeficient of the monomial
      */
-    setCoef(coef: number) {
-      this.coef = coef;
+    setCoef(coef: Fraction | number) {
+      if(typeof(coef) === "number")
+        this.coef = new Fraction(coef,1)
+      else
+        this.coef = coef;
     }
   
     /**
@@ -194,34 +213,42 @@ export class Monomial {
     }
   
     /**
-     * 
-     * Sum of this this monomial and `m`
-     */
-    plus(m: Monomial | number) {
-      if(typeof m === "number"){
-        return new Monomial(this.coef + m, this.exp, this.vars);
-      }
-      else{
+   * Sum of this monomial with `m`
+   * @param m Monomial to add
+   */
+    plus(m: Monomial) {
+    
         if (!m.equalExponent(this) || !m.sameVars(this))
           throw new Error(`TRYING TO SUM MONOMIALS WITH DIFFERENT EXPONENT OR VARIABLES`);
   
-        return new Monomial(this.coef + m.coef, this.exp, this.vars);
-      }
+        return new Monomial(this.coef.plus(m.coef), this.exp, this.vars);
+      
+    }
+
+    /**
+   * Substraction of this monomial with `m`
+   * @param m Monomial to substract
+   */
+    minus(m: Monomial) {
+      return this.plus(m.multiply(-1));
     }
   
     /**
      * 
      * Product of this this monomial and `m`
      */
-    multiply(m: Monomial | number) {
-      if (typeof m === "number") {
-        return new Monomial(this.coef * m, this.exp, this.vars);
+    multiply(m: Monomial | Fraction | number) {
+      if(typeof(m) === "number"){
+        return new Monomial(this.coef.multiply(m), this.exp, this.vars);
+      }
+      if ( m instanceof Fraction) {
+        return new Monomial(this.coef.multiply(m), this.exp, this.vars);
       } else {
         if (!m.sameVars(this))
           throw new Error("TRYING TO MULTIPLY MONOMIALS WITH DIFFERENT EXPONENT OR VARIABLES");
   
         const e = this.exp.map((v, i) => v + m.exp[i]);
-        const c = this.coef * m.coef;
+        const c = this.coef.multiply(m.coef);
   
         return new Monomial(c,e, this.vars);
       }
@@ -231,19 +258,22 @@ export class Monomial {
      * 
      * Division of this this monomial and `m`
      */
-    divide(m: Monomial | number){
-      if (typeof m === "number") {
-        if(m === 0)
+    divide(m: Monomial | Fraction|number){
+      if(typeof(m) === "number"){
+        return new Monomial(this.coef.divide(m), this.exp, this.vars);
+      }
+      if (m instanceof Fraction) {
+        if(m.isZero())
           throw new Error("TRYING TO DIVIDE MONOMIAL BY 0");
   
-        return new Monomial(this.coef / m, this.exp, this.vars);
+        return new Monomial(this.coef.divide(m), this.exp, this.vars);
       } 
       else {
         if (!m.sameVars(this))
           throw new Error("TRYING TO DIVIDE MONOMIALS WITH DIFFERENT EXPONENT OR VARIABLES");
   
         const e = this.exp.map((v, i) => v - m.exp[i]);
-        const c = this.coef / m.coef;
+        const c = this.coef.divide(m.coef);
   
         return new Monomial(c,e, this.vars);
       }
@@ -260,12 +290,20 @@ export class Monomial {
       return this.exp.every((e,idx) => e <= m.exp[idx]);
     }
   
+    static zero(vars= ["t","x","y","z"]) {
+      return new Monomial(0, new Float64Array(vars.map(v=>0)), vars)
+    }
+
+    static one(vars= ["t","x","y","z"]) {
+      return new Monomial(1, new Float64Array(vars.map(v=>0)), vars)
+    }
+
     /**
      * 
      * Checks if the monomial is equivalent to 0
      */
     isZero() {
-      return this.coef === 0;
+      return this.coef.isZero();
     }
   
     /**
@@ -273,7 +311,7 @@ export class Monomial {
      * Checks if the monomial is equivalent to 1
      */
     isOne() {
-      return this.coef === 1 && this.exp.every((e) => e === 0);
+      return this.coef.isOne() && this.exp.every((e) => e === 0);
     }
   
     /**
@@ -292,7 +330,7 @@ export class Monomial {
      * Checks if this monomial and `m` have the same coefficient value
      */
     equalCoef(m: Monomial) {
-      return this.coef === m.coef;
+      return this.coef.equals(m.coef);
     }
   
     /**
@@ -301,6 +339,38 @@ export class Monomial {
      */
     equals(m: Monomial) {
       return this.equalExponent(m) && this.equalCoef(m);
+    }
+
+    /**
+     * 
+     * Checks if this monomial is less or equal `m` using *lex*
+     */
+    le(m: Monomial) {
+      if(!this.sameVars(m))
+        throw new Error("Monomials in different rings")
+
+      for (let i = 0; i < this.exp.length; i++) {
+        if (this.exp[i] < m.getExp()[i]) return true;
+        else if (this.exp[i] > m.getExp()[i]) return false;
+      }
+
+      return true;
+    }
+
+    /**
+     * 
+     * Checks if this monomial is greater or equal `m` using *lex*
+     */
+    ge(m: Monomial) {
+      if(!this.sameVars(m))
+        throw new Error("Monomials in different rings")
+
+      for (let i = 0; i < this.exp.length; i++) {
+        if (this.exp[i] > m.getExp()[i]) return true;
+        else if (this.exp[i] < m.getExp()[i]) return false;
+      }
+
+      return true;
     }
   
     /**
@@ -320,12 +390,12 @@ export class Monomial {
       if (this.isOne()) return "1";
       let mon: string = "";
   
-      if (this.coef === -1 && this.exp.some(e=>e!==0)) mon = "-";
-      else if (this.coef === 1 && !this.exp.every(e=>e===0)) mon = "";
+      if (this.coef.neg().isOne() && this.exp.some(e=>e!==0)) mon = "-";
+      else if (this.coef.isOne() && !this.exp.every(e=>e===0)) mon = "";
       else mon = this.coef.toString();
   
       // Separar - del coeficiente
-      if (this.coef < 0) mon = [mon.slice(0, 1), " ", mon.slice(1)].join("");
+      if (this.coef.toNumber() < 0) mon = [mon.slice(0, 1), " ", mon.slice(1)].join("");
   
       this.vars.forEach((v, idx) => {
         const e = this.exp[idx];

@@ -43,15 +43,22 @@ const renderCell = (
   } else if (col === "inputMode") {
     return <Badge isSquared>{data.inputMode}</Badge>;
   } else if (col === "input") {
+    let eq1 = data.input[1] !== "1" ? `x=\\frac{${data.input[0]}}{${data.input[1]}}` : data.input[0]
+    let eq2 = data.input[3] !== "1" ? `y=\\frac{${data.input[2]}}{${data.input[3]}}` : data.input[2]
+    let eq3 = data.input[5] !== "1" ? `z=\\frac{${data.input[4]}}{${data.input[5]}}` : data.input[4]
+
+    eq1=eq1.replace("*", "\\cdot ")
+    eq2=eq2.replace("*", "\\cdot ")
+    eq3=eq3.replace("*", "\\cdot ")
     return (
       <Row>
         {data.inputMode === InputMode.SDF ? (
           <Text css={{ fontFamily: "Fira Code" }}>{data.input}</Text>
         ) : (
-          <Latex>{` $$ ${
+          <Latex displayMode={true}>{` $$ ${
             data.inputMode === InputMode.Implicit
               ? data.input[0]
-              : data.input.join(",")
+              : [eq1,eq2,eq3].join(",\\ ")
           } $$`}</Latex>
         )}
       </Row>
@@ -153,7 +160,7 @@ export function SurfaceTable(props: {
           
         >
           {column.uid !== "actions" ? (
-            column.name
+            <Text b size={15} css={{marginRight: "20px"}}>{column.name}</Text>
           ) : (
             <>
               <AddButton />

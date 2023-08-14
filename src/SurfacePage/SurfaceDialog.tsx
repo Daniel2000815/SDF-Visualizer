@@ -26,6 +26,8 @@ import { defaultMaterial } from "../Shader/defaultMaterial";
 import { StringToSDF, ImplicitToSDF } from "../Utils/StringToSDF";
 import { TransformToValidName } from "../Utils/transformToValidName";
 import { Polynomial } from "../multivariate-polynomial/Polynomial";
+import { Ideal } from "../multivariate-polynomial/Ideal";
+
 import { Shader } from "../Shader/Shader";
 
 import "katex/dist/katex.min.css";
@@ -62,13 +64,13 @@ export function SurfaceDialog(props: {
   const [exampleShaderFunction, setExampleShaderFunction] = useState("");
 
   // INPUT FROM DIALOG
-  const [inputMath, setInputMath] = useState(["5*t^2 + 2*s^2 - 10", "s", "t"]);
+  const [inputMath, setInputMath] = useState(["5*t^2 + 2*s^2 - 10", "1", "s", "1", "t", "1"]);
   const [inputName, setInputName] = useState("");
   const [inputParameters, setInputParameters] = useState<Parameter[]>([]);
   const [inputMaterial, setInputMaterial] = useState<Material>(defaultMaterial);
 
   // VALIDATION OS INPUT FROM DIALOG
-  const [mathErrorMsg, setMathErrorMsg] = useState(["", "", ""]);
+  const [mathErrorMsg, setMathErrorMsg] = useState(["", "", "", "", "", ""]);
   const [nameErrorMsg, setNameErrorMsg] = useState("");
 
   const [eqInputMode, setEqInputMode] = useState(InputMode.Implicit);
@@ -90,25 +92,24 @@ export function SurfaceDialog(props: {
       setEqInputMode(initialSurf.inputMode);
       console.log("TEST ", initialSurf);
       console.log("TEST ", initialSurf.input);
-      if (initialSurf.inputMode === InputMode.Parametric) {
-        setInputMath([
-          initialSurf.input[0],
-          initialSurf.input[1],
-          initialSurf.input[2],
-        ]);
-      } else {
-        setInputMath([initialSurf.input[0], "", ""]);
-        console.log("TEST ", inputMath);
-      }
+      setInputMath([
+        initialSurf.input[0],
+        initialSurf.input[1],
+        initialSurf.input[2],
+        initialSurf.input[3],
+        initialSurf.input[4],
+        initialSurf.input[5],
+      ]);
 
       setInputName(initialSurf.name);
 
       setInputParameters(initialSurf.parameters);
       setInputMaterial(initialSurf.material);
       console.log("computing example sdf");
+      
       computeExampleSDF(initialSurf.parsedInput);
     } else {
-      setInputMath(["", "", ""]);
+      setInputMath(["", "", "", "", "", ""]);
       setInputName("");
       setExampleSDF("");
       setInputParameters([]);
@@ -160,7 +161,7 @@ export function SurfaceDialog(props: {
   const handleNewEquationParam = (): [string | null, string[]] => {
     console.log("HANDLING PARAMETRIC ", mathErrorMsg);
     let implicit = "";
-    let newErrorMsg = ["", "", ""];
+    let newErrorMsg = ["", "", "", "", "", ""];
     let fs: Polynomial[] = [];
 
     // SPELL CHECK
@@ -185,16 +186,36 @@ export function SurfaceDialog(props: {
       }
     });
 
+    fs.forEach((f:Polynomial, idx:number)=>console.log("f",idx, " = ", f.toString()))
+
     // PARAM -> IMPLICIT
     try {
-      const res = Polynomial.implicitateR3(
+      
+      
+      let abort = false;
+      [1,3,5].forEach(val => {
+        if(fs[val].isZero()){
+          newErrorMsg[val] = "Denominator can't be 0"
+          abort = true;
+        }
+      })
+
+      if(abort) return [null, newErrorMsg];
+
+
+   
+      
+      const res = Ideal.implicitateR3(
         fs[0],
-        fs[1],
         fs[2],
+        fs[4],
+        fs[1],
+        fs[3],
+        fs[5],
         inputParameters.map((p) => p.symbol)
       );
       implicit = res.toString(true);
-      console.log("AQUI2 ", res);
+      console.log("IMPLICITATION ", res.toString());
       console.log(
         "AQUI: ",
         fs[0].toString(),
@@ -206,6 +227,7 @@ export function SurfaceDialog(props: {
         implicit
       );
     } catch (error: any) {
+      console.log("STEP 1")
       newErrorMsg.fill(Error(error).message);
       return [null, newErrorMsg];
     }
