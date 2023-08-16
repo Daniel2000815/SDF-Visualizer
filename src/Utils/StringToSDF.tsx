@@ -41,6 +41,10 @@ export function StringToSDF (node: any, parametersInput: Parameter[], evaluate: 
         else if(!isNaN(node.value)){
           return parseFloat(node.value).toFixed(4);}
         else{
+          if(node.value.length > 1){
+            
+          }
+          console.log("AQUI: ", node.value, " NO ES SÍMBOLO; SÍMBOLOS: ", parametersInput, " KEYS: ", parametersSymbols, " CONTAINS: ", isParam, typeof(node.value))
           throw new Error(`${node.value} is not a symbol`);
         }
       }
@@ -84,10 +88,11 @@ export function StringToSDF (node: any, parametersInput: Parameter[], evaluate: 
 export function ImplicitToSDF(implicit: string, parameters: Parameter[], evaluate: boolean = false) : string{
   let f: string | null = null; // Parsed string by nerdamer
   let res = "";
-
+  console.log("PEPE 1")
   try {
     f = nerdamerTS(implicit).toString();
   } catch (error: any) {
+    console.log("reALLY?")
     error = error.message.split("at ")[0];
 
     throw new Error(`ERROR PARSING EQUATION ${implicit}`);
@@ -103,6 +108,7 @@ export function ImplicitToSDF(implicit: string, parameters: Parameter[], evaluat
   else{
     let sdf = nerdamer(`(${f})/(${norm})`);
     var x = nerdamerTS.tree(sdf.toString());
+    console.log("PEPE")
     res = StringToSDF(x, parameters, evaluate);
   }
 

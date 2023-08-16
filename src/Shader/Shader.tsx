@@ -160,7 +160,7 @@ function MyShader(props: {
       let difY = y - draggingLastPos.current[1];
       difX *= 2.0;
 
-      const newAng = [angle[0] + difX, clamp(angle[1] + 2*difY, -1.5, 1.5)];
+      const newAng = [angle[0] + difX, clamp(angle[1] + 2*difY, -1.55, 1.55)];
       setAngle(newAng);
       draggingLastPos.current = mousePos.current;
     }
