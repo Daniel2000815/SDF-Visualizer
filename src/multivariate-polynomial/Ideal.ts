@@ -12,7 +12,7 @@ export class Ideal {
      * @param generators Generators of the Ideal
      */
     constructor(generators: Polynomial[]){
-      this.generators = Polynomial.buchbergerReduced(generators, 100000);
+      this.generators = Polynomial.buchbergerReduced(generators, 1000000);
     }
   
     /**
@@ -66,6 +66,7 @@ export class Ideal {
    * @returns Generator of the smallest variety containing the image of (`fx/qx`,`fy/qy`,`fz/qz`)
    */
   static implicitateR3(fx: Polynomial, fy: Polynomial, fz: Polynomial, qx: Polynomial, qy: Polynomial, qz: Polynomial, parameters: string[] = []){
+    console.log("=================================")
     if(!fx.sameVars(fy) || !fx.sameVars(fz) || !fx.sameVars(qx) || !fx.sameVars(qy) || !fx.sameVars(qz))
       throw new Error("PARAMETRIZATIONS IN DIFFERENT RINGS")
     if(qx.isZero() || qy.isZero() || qz.isZero())
@@ -135,14 +136,17 @@ export class Ideal {
     })
 
     
-    if(J.length == 0)
+    if(J.length == 0){
       return Polynomial.zero(resVars)
+      
+    }
     else if(J.length ==1){
       let intersection = J[0];
       intersection.removeVariables(elimVars);
       return intersection;
     }
     else{
+      J.forEach(j => console.log(j.toString()))
       throw new Error("PARAMETRIZATION DOES NOT SATISFY AN UNIQUE IMPLICIT EQUATION")
     }
 

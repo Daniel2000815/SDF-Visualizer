@@ -186,7 +186,7 @@ export function SurfaceDialog(props: {
       }
     });
 
-    fs.forEach((f:Polynomial, idx:number)=>console.log("f",idx, " = ", f.toString()))
+    fs.forEach((f:Polynomial, idx:number)=>console.log("f",idx, " = ", f,f.toString()))
 
     // PARAM -> IMPLICIT
     try {
@@ -234,8 +234,12 @@ export function SurfaceDialog(props: {
 
     // IMPLICIT -> SDF
     try {
-      return [ImplicitToSDF(implicit, inputParameters), newErrorMsg];
+      console.log("COMPUTING IMPLICIT SDF");
+      let r = ImplicitToSDF(implicit, inputParameters);
+      // setExampleSDF(ImplicitToSDF(inputMath[0], inputParameters, true));
+      return [r, newErrorMsg];
     } catch (error: any) {
+      console.log("error:", Error(error).message);
       newErrorMsg.fill(Error(error).message);
       return [null, newErrorMsg];
     }
@@ -261,7 +265,7 @@ export function SurfaceDialog(props: {
       console.log("COMPUTING IMPLICIT SDF");
       let r = ImplicitToSDF(inputMath[0], inputParameters);
       console.log("HECHO", ImplicitToSDF(inputMath[0], inputParameters, true));
-      setExampleSDF(ImplicitToSDF(inputMath[0], inputParameters, true));
+      // setExampleSDF(ImplicitToSDF(inputMath[0], inputParameters, true));
       return [r, newErrorMsg];
     } catch (error: any) {
       console.log("error:", Error(error).message);
