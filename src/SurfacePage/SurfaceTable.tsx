@@ -53,7 +53,7 @@ const renderCell = (
     return (
       <Row>
         {data.inputMode === InputMode.SDF ? (
-          <Text css={{ fontFamily: "Fira Code" }}>{data.input}</Text>
+          <Text css={{ fontFamily: "Fira Code" }}>{data.input[0]}</Text>
         ) : (
           <Latex displayMode={true}>{` $$ ${
             data.inputMode === InputMode.Implicit
