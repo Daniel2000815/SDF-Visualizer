@@ -507,6 +507,7 @@ export function SurfaceDialog(props: {
                     width={size.width}
                     height={size.height}
                     onError={(e: string) => handleShaderError(e)}
+                    uniforms={new Map()}
                   />
                 </Grid>
               )}

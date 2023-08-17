@@ -24,37 +24,37 @@ const defaultNodes = [
     id: "primitive",
     type: "primitive",
     position: { x: -150, y: 200 },
-    data: { sdf: "cube(p,1.0)", inputs: {}, children: [], material: defaultMaterial },
+    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
   },
   {
     id: "primitive2",
     type: "primitive",
     position: { x: -150, y: -200 },
-    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [] , material: defaultMaterial },
+    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [] , material: defaultMaterial, uniforms: new Map() },
   },
   {
     id: "deform",
     type: "deform",
     position: { x: 150, y: 300 },
-    data: { sdf: "", inputs: new Map(), children: [] , material: defaultMaterial },
+    data: { sdf: "", inputs: new Map(), children: [] , material: defaultMaterial, uniforms: new Map() },
   },
   {
     id: "boolean",
     type: "boolean",
     position: { x: 150, y: -75 },
-    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
   },
   {
     id: "transform",
     type: "transform",
     position: { x: 150, y: -400 },
-    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
   },
   {
     id: "repeat",
     type: "repeat",
     position: { x: 150, y: -700 },
-    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
   },
 ];
 
@@ -244,8 +244,8 @@ export const useStore = create((set, get) => ({
   },
 
   createNode(type, x, y) {
-    const id = nanoid();
-    const data = { sdf: "", inputs: new Map(), children: [], material: defaultMaterial };
+    const id = nanoid().replace(/\d+/g, '');
+    const data = { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() };
     const position = { x: x, y: y };
 
     set({ nodes: [...get().nodes, { id, type, data, position }] });
@@ -278,13 +278,14 @@ export const useStore = create((set, get) => ({
 
   updateNode(id, data) {
     // update node logic -> update data
+    console.log("UPDATE ", id, data)
     var sourceNode = null;
-
     // Update and find source
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === id) {
           sourceNode = node;
+          console.log("DOMA ", data)
           return { ...node, data: Object.assign(node.data, data) };
         } else {
           return node;
@@ -292,12 +293,25 @@ export const useStore = create((set, get) => ({
       }),
     });
 
+    get().setNeedsUpdate(id, true);
+
     // Update its children
     set({
       nodes: get().nodes.map((node) => {
         if (sourceNode.data.children.includes(node.id)) {
+          
           var newInputs = node.data.inputs;
           newInputs.set(sourceNode.id, sourceNode.data.sdf);
+
+          var newUniforms = new Map([...node.data.uniforms, ...sourceNode.data.uniforms]);
+          // newUniforms.set(sourceNode.id, sourceNode.data.sdf);
+          // sourceNode.data.uniforms.forEach((u)=>newUniforms.set(u[0], u[1]))
+          console.log("================")
+          console.log(sourceNode.data.uniforms);
+          console.log(newUniforms);
+
+          
+          console.log("ACTUALIZANDO HIJO ", node.id ," CON PADRE ", sourceNode.data.uniforms , " E HIJO ", node.data.uniforms, ": ", newUniforms);
           // newInputs[`${sourceNode.id}`] = sourceNode.data.sdf;
           // console.log("ACTUALIZANDO ",  node.id, " INPUTS: ", newInputs);
           get().setNeedsUpdate(node.id, true);
@@ -305,6 +319,7 @@ export const useStore = create((set, get) => ({
             ...node,
             data: Object.assign(node.data, {
               inputs: newInputs,
+              uniforms: newUniforms
             }),
           };
         } else {
@@ -388,8 +403,11 @@ export const useStore = create((set, get) => ({
     var newInputs = targetNode.data.inputs;
     // newInputs[`${source}`] = sourceNode.data.sdf;
     newInputs.set(source, sourceNode.data.sdf);
-    get().updateNode(target, { inputs: newInputs });
-    get().setNeedsUpdate(target, true);
+    var newUniforms = new Map([...targetNode.data.uniforms, ...sourceNode.data.uniforms]);
+
+    console.log("AQUI ES ", newUniforms)
+    get().updateNode(target, { inputs: newInputs, uniforms: newUniforms });
+    // get().setNeedsUpdate(target, true);
   },
 
   setNeedsUpdate(id, val) {

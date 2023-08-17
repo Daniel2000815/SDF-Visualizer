@@ -16,7 +16,9 @@ const primitiveSelector = (id: any) => (store: any) => ({
 });
 
 const graphSelector = (id: any) => (store: any) => ({
-  changePrimitive: (newP: string, mat: Material) => store.updateNode(id, { sdf: newP, material:  mat}),
+  changePrimitive: (newP: string, mat: Material, parameters: Parameter[], inputs: number[]) => store.updateNode(id, { sdf: newP, material:  mat, uniforms: new Map(
+    parameters.map((param: Parameter, idx: number) => [`${id}_${param.symbol}`, inputs[idx]])
+  )}),
 });
 
 const theme : Theme = {
@@ -59,7 +61,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
     setInputs(newInputs);
 
     const sdf = `${newP}(p${parameters.length > 0 ? "," : ""}${parameters
-      .map((p, idx) => `${newInputs[idx].toFixed(4)}`)
+      .map((p, idx) => `${props.id}_${p.symbol}`)
       .join(",")})`;
 
     setPrimitive(newPrimitive);
@@ -73,7 +75,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
 
     
     
-    changePrimitive(sdf, newPrimitive.material);
+    changePrimitive(sdf, newPrimitive.material, parameters, newInputs);
   };
 
   const handleInputChange = (newVal: number, idx: number) => {
@@ -92,10 +94,10 @@ export function PrimitiveNode(props: { id: string; data: any }) {
     console.log("param:", parameters);
 
     const sdf = `${primitive.id}(p${parameters.length > 0 ? "," : ""}${parameters
-      .map((p, idx) => `${newInputs[idx].toFixed(4)}`)
+      .map((p, idx) => `${props.id}_${p.symbol}`)
       .join(",")})`;
       
-    changePrimitive(sdf, primitive.material);
+    changePrimitive(sdf, primitive.material, parameters, newInputs);
   };
 
   return (
@@ -111,6 +113,7 @@ export function PrimitiveNode(props: { id: string; data: any }) {
       theme={theme}
       currDropddownOption={primitive?.name}
     >
+      {/* { JSON.stringify(props.data.uniforms)} */}
       {primitive &&
         primitive.parameters.map((p: Parameter, idx: number) => p.type==="number" ?( 
           <FloatInput
