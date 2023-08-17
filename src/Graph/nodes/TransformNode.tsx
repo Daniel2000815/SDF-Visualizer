@@ -11,6 +11,7 @@ import {FloatInput} from "../../Components/FloatInput";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf }),
+  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
@@ -24,7 +25,7 @@ const theme: Theme = {
 };
 
 export function TransformNode(props: { id: string; data: any }) {
-  const { finishUpdate, updateSdf, needsToUpdate } = useStore(
+  const { finishUpdate, updateSdf, updateUniforms, needsToUpdate } = useStore(
     selector(props.id),
     shallow
   );
@@ -54,18 +55,18 @@ export function TransformNode(props: { id: string; data: any }) {
         ) {
           newSdf = input.replaceAll(
             "p,",
-            `${op}(p, vec3(${transformVal[0].toFixed(4)},${transformVal[1].toFixed(4)}, ${transformVal[2].toFixed(4)}) ),`
+            `${op}(p, vec3(${props.id}_transformX, ${props.id}_transformY, ${props.id}_transformZ) ),`
           );
         } else {
           newSdf = input.replaceAll(
             "p,",
-            `${op}(p, ${transformVal[0].toFixed(4)}),`
+            `${op}(p, ${props.id}_transformX),`
           );
         }
       } else {
         // const s = `vec3(${transformVal.join(",")})`;
-        const s = transformVal[0].toFixed(4);
-        newSdf = input.replaceAll("p,", `(p/${s}),`).concat(`*${s}`);
+        // const s = transformVal[0].toFixed(4);
+        newSdf = input.replaceAll("p,", `(p/(${props.id}_transformX)),`).concat(`*(${props.id}_transformX)`);
       }
     }
 
@@ -84,12 +85,22 @@ export function TransformNode(props: { id: string; data: any }) {
     updateSdf(newSdf);
   };
 
+  const handleUniforms = () => {
+    let newUniforms = new Map<string,number>(props.data.uniforms);
+    newUniforms.set(`${props.id}_transformX`, transformVal[0]);
+    newUniforms.set(`${props.id}_transformY`, transformVal[1]);
+    newUniforms.set(`${props.id}_transformZ`, transformVal[2]);
+    updateUniforms(newUniforms)
+  }
+
   useEffect(() => {
+    handleUniforms()
     computeSdf();
   }, [operation, transformVal]);
 
   useEffect(() => {
     if (needsToUpdate) {
+      handleUniforms()
       computeSdf();
       finishUpdate();
     }

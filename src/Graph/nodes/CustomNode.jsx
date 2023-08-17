@@ -66,10 +66,9 @@ export function CustomNode({
               theme={theme}
             />
           )}
-            
             {children}
             {/* {data.sdf}       */}
-            <Shader sdf={data.sdf} primitives="" width={180} height={100} material={data.material }/>
+            <Shader sdf={data.sdf} primitives="" width={180} height={100} material={data.material } uniforms={data.uniforms}/>
           
         </div>
       )}

@@ -10,6 +10,7 @@ import { Text } from "@nextui-org/react";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf }),
+  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
@@ -25,7 +26,7 @@ const theme: Theme = {
 //create a subscriber
 
 export function BooleanNode(props: { id: string; data: any }) {
-  const { finishUpdate, updateSdf, needsToUpdate } = useStore(
+  const { finishUpdate, updateSdf, updateUniforms, needsToUpdate } = useStore(
     selector(props.id),
     shallow
   );
@@ -46,14 +47,14 @@ export function BooleanNode(props: { id: string; data: any }) {
     }
     if (keys >= 2) {
       console.log("KEYS ", keys);
-      newSdf = `${operation}(${it.next().value}, ${it.next().value}, ${smooth.toFixed(4)}, ${n.toFixed(4)}, interp)`;
+      newSdf = `${operation}(${it.next().value}, ${it.next().value}, ${props.id}_smooth, ${props.id}_n, interp)`;
 
       // Add the rest of inputs
       for (let i = 0; i < keys - 2; i++) {
         console.log("new");
         newSdf = `${operation}(${
           it.next().value
-        }, ${newSdf}, ${smooth.toFixed(4)}, ${n.toFixed(4)}, interp)`;
+        }, ${newSdf}, ${props.id}_smooth, ${props.id}_n, interp)`;
       }
     }
 
@@ -61,12 +62,21 @@ export function BooleanNode(props: { id: string; data: any }) {
     updateSdf(newSdf);
   };
 
+  const handleUniforms = () => {
+    let newUniforms = new Map<string,number>(props.data.uniforms);
+    newUniforms.set(`${props.id}_smooth`, smooth);
+    newUniforms.set(`${props.id}_n`, n);
+    updateUniforms(newUniforms)
+  }
+
   useEffect(() => {
+    handleUniforms()
     computeSdf();
   }, [operation, smooth, n]);
 
   useEffect(() => {
     if (needsToUpdate) {
+      handleUniforms();
       computeSdf();
       finishUpdate();
     }

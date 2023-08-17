@@ -12,6 +12,7 @@ import { comboSort } from "nerdamer-ts/dist/Core/Utils";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, {sdf: sdf}), 
+  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
@@ -28,7 +29,7 @@ const theme : Theme = {
 
 
 export function DeformNode(props: { id: string; data: any }) {
-  const { finishUpdate, updateSdf, needsToUpdate } = useStore(selector(props.id), shallow);
+  const { finishUpdate, updateSdf, updateUniforms, needsToUpdate } = useStore(selector(props.id), shallow);
   const [operation, setOperation] = React.useState(DeformOperations.Bend);
   const [elong, setElong] = React.useState([0.0, 0.0, 0.0]);
   const [k, setK] = React.useState(0.5);
@@ -57,26 +58,35 @@ export function DeformNode(props: { id: string; data: any }) {
       newSdf = input ? `${operation}(${input}, ${k.toFixed(4)})` : "";
     }
     else{
-      console.log("la operacopm es ", operation);
       if(operation===DeformOperations.Elongation){
-        console.log("asi que entro aqui")
-        newSdf = input ? input.replaceAll("p,", `${operation}(p, vec3(${elong[0].toFixed(4)},${elong[1].toFixed(4)},${elong[2].toFixed(4)})),`) : "";
+        newSdf = input ? input.replaceAll("p,", `${operation}(p, vec3(${props.id}_elongX,${props.id}_elongY,${props.id}_elongZ)),`) : "";
       }
       else{
-        newSdf = input ? input.replaceAll("p,", `${operation}(p, ${k.toFixed(4)}),`) : "";
+        newSdf = input ? input.replaceAll("p,", `${operation}(p, ${props.id}_k),`) : "";
       }
     }
 
-    console.log("ACT ", newSdf);
     updateSdf(newSdf);
+  }
+
+  const handleUniforms = () => {
+    let newUniforms = new Map<string,number>(props.data.uniforms);
+    newUniforms.set(`${props.id}_elongX`, elong[0]);
+    newUniforms.set(`${props.id}_elongY`, elong[1]);
+    newUniforms.set(`${props.id}_elongZ`, elong[2]);
+    newUniforms.set(`${props.id}_k`, k);
+
+    updateUniforms(newUniforms)
   }
   
   useEffect(() => {
+    handleUniforms()
     computeSdf();
   }, [operation, elong, k]);
 
   useEffect(() => {
     if (needsToUpdate) {
+      handleUniforms()
       computeSdf();
       finishUpdate();
     }

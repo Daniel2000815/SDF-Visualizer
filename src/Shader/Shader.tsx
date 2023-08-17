@@ -63,7 +63,7 @@ function MyShader(props: {
   width: number | null;
   height: number | null;
   onError?: (e: string) => void;
-  uniforms?: any[];
+  uniforms: Map<string, any>;
   material: Material;
 }) {
   const { savedPrimitives } = usePrimitiveStore(selector(), shallow);
@@ -78,6 +78,7 @@ function MyShader(props: {
   
   const [compileError, setCompileError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [shaderUniforms, setShaderUniforms] = useState<{[uniform:string]: any}>({});
   // const [shader, setShader] = useState<ShaderIdentifier>(
   //   CreateShader(props.sdf, props.primitives).helloGL
   // );
@@ -123,7 +124,7 @@ function MyShader(props: {
     }
 
     setCompileError(false);
-    setShader(CreateShader(props.sdf, props.primitives).helloGL);
+    setShader(CreateShader(props.sdf, props.primitives, Array.from(props.uniforms.keys())).helloGL);
 
     console.log("HELLO ", props.material)
   }, [props.sdf, props.primitives]);
@@ -131,13 +132,36 @@ function MyShader(props: {
   useEffect(()=>{
     console.log("zoom:" , zoom);
   }, [zoom])
+
+  useEffect(()=>{
+    // let objetoFormatoDeseado : {[uniform:string]: any} = {};
+    // props.uniforms.forEach((valor, clave) => {
+    //   objetoFormatoDeseado[clave] = { type: '1f', value: valor };
+    // });
+
+    if(Object.keys(shaderUniforms).some((clave:string) => !Object.keys(props.uniforms).includes(clave))){
+      // hay que recompilar
+      setShader(CreateShader(props.sdf, props.primitives, Array.from(props.uniforms.keys())).helloGL);
+    }
+
+    
+
+    // console.log(objetoFormatoDeseado)
+    
+    // let newUniforms ={
+    //   ...objetoFormatoDeseado
+    // };
+
+    // console.log(newUniforms)
+    // setShaderUniforms(newUniforms)
+  }, [props.uniforms])
   
 
-  function CreateShader(sdf: string, primitives: string) {
-    console.log(" creating shader with ", primitives);
+  function CreateShader(sdf: string, primitives: string, newUniforms: string[]) {
+    console.log(" creating shader with uniforms", newUniforms, ", primitives ", primitives, fs(sdf, String(savedPrimitives).concat(primitives) ));
     return Shaders.create({
       helloGL: {
-        frag: GLSL`${fs(sdf, String(savedPrimitives).concat(primitives))}`,
+        frag: GLSL`${fs(sdf, String(savedPrimitives).concat(primitives), newUniforms)}`,
       },
     });
   }
@@ -204,6 +228,7 @@ function MyShader(props: {
           size={props.width ? 0.6 * props.width : 24}
           animation={alertCircle}
         />}
+        {/* {JSON.stringify(Object.fromEntries(props.uniforms.entries()))} */}
     {!compileError && <div
         // ref={ref}
         // style={{ height: "100%", width: "100%" }}
@@ -245,6 +270,7 @@ function MyShader(props: {
                 u_lightsPos: [0.5, 0.4, -0.6, -1.0, 1.0,-2.0, 0,0,0,0,0,0],
                 u_lightsColor: [0.4, 0.4,0.4,0.4, 0.4,0.4,0,0,0,0,0,0],
                 u_lightsSize: [1.5, 10],
+                ...Object.fromEntries(props.uniforms.entries())
               }}
             />
           </Surface>

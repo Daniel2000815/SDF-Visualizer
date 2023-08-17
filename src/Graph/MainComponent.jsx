@@ -98,6 +98,7 @@ export function MainComponent() {
             <Grid style={{margin: "10px", marginTop: "50px"}}>
               <Shader
                 sdf={selectedSdf}
+                uniforms={new Map()}
                 primitives=""
                 material={defaultMaterial}
                 width={0.6 * size.width}

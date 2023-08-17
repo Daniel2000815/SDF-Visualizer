@@ -7,8 +7,9 @@ import {Vector3Input} from "../../Components/GraphPage/Vector3Input";
 import {FloatInput} from "../../Components/FloatInput";
 
 const selector = (id: any) => (store: any) => ({
-  needsToUpdate: store.needsToUpdate[id],
-  updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf }),
+  needsToUpdate: store.needsToUpdate[id], 
+  updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf}),
+  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
@@ -22,7 +23,7 @@ const theme: Theme = {
 };
 
 export function RepeatNode(props: { id: string; data: any }) {
-  const { finishUpdate, updateSdf, needsToUpdate } = useStore(
+  const { finishUpdate, updateSdf, updateUniforms, needsToUpdate } = useStore(
     selector(props.id),
     shallow
   );
@@ -32,7 +33,7 @@ export function RepeatNode(props: { id: string; data: any }) {
   );
   const [repeatVal, setRepeatVal] = React.useState([1.0, 1.0, 1.0]);
   const [separation, setSeparation] = React.useState(5.0);
-
+  
   const computeSdf = () => {
     console.log("REPEAT NODE SE ACTUALIZA CON ", props.data.inputs);
     console.log(operation);
@@ -51,7 +52,7 @@ export function RepeatNode(props: { id: string; data: any }) {
       else if(operation === RepeatOperations.Finite_Repeat){
         newSdf = input.replaceAll(
             "p,",
-            `${op}(p, ${separation.toFixed(4)}, vec3(${repeatVal[0].toFixed(4)}, ${repeatVal[1].toFixed(4)}, ${repeatVal[2].toFixed(4)})),`
+            `${op}(p, ${props.id}_separation, ${props.id}_repeatX, ${props.id}_repeatY, ${props.id}_repeatZ)),`
         );
       } 
       else if(operation === RepeatOperations.Infinite_Repeat){
@@ -78,12 +79,26 @@ export function RepeatNode(props: { id: string; data: any }) {
     updateSdf(newSdf);
   };
 
+  const handleUniforms = () => {
+    let newUniforms = new Map<string,number>(props.data.uniforms);
+    newUniforms.set(`${props.id}_separation`, separation);
+    newUniforms.set(`${props.id}_repeatX`, repeatVal[0]);
+    newUniforms.set(`${props.id}_repeatY`, repeatVal[1]);
+    newUniforms.set(`${props.id}_repeatZ`, repeatVal[2]);
+    updateUniforms(newUniforms)
+  }
   useEffect(() => {
+    console.log("YIJA ", props.data.uniforms)
+    handleUniforms()
+    
     computeSdf();
   }, [operation, repeatVal, separation]);
 
   useEffect(() => {
     if (needsToUpdate) {
+      console.log("NEEDS UPDATE ", props.id)
+      console.log(props.data)
+      handleUniforms()
       computeSdf();
       finishUpdate();
     }
@@ -104,7 +119,7 @@ export function RepeatNode(props: { id: string; data: any }) {
     >
       {/* UPDATE: {needsToUpdate.toString()} */}
       {/* SDF: {props.data.sdf} */}
-      {/* INPUTS: {JSON.stringify(props.data.inputs)} */}
+      {/* INPUTS: {JSON.stringify(props.data)} */}
       {[RepeatOperations.Finite_Repeat, RepeatOperations.Infinite_Repeat].includes(
         operation
       ) && 

@@ -1,6 +1,6 @@
 import { operators } from "./operators";
 
-export const fs = (sdf, primitives) => {
+export const fs = (sdf, primitives, uniforms = [] ) => {
   return `
     precision mediump float;
     
@@ -33,6 +33,8 @@ export const fs = (sdf, primitives) => {
     uniform float u_lightsColor[12];
     uniform vec4  u_lightsSize;
     
+    ${uniforms.map(u => `uniform float ${u};`).join("\n")}
+
     // == TYPE DECLARATIONS ==
     struct Material
     {
