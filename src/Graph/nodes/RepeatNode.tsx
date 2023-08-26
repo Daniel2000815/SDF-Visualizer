@@ -52,7 +52,7 @@ export function RepeatNode(props: { id: string; data: any }) {
       else if(operation === RepeatOperations.Finite_Repeat){
         newSdf = input.replaceAll(
             "p,",
-            `${op}(p, ${props.id}_separation, ${props.id}_repeatX, ${props.id}_repeatY, ${props.id}_repeatZ)),`
+            `${op}(p, ${props.id}_separation, vec3(${props.id}_repeatX, ${props.id}_repeatY, ${props.id}_repeatZ)),`
         );
       } 
       else if(operation === RepeatOperations.Infinite_Repeat){

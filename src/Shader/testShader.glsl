@@ -4,7 +4,7 @@ precision mediump float;
 
 #define AO  
 #define SHADOWS
-#define AA 1
+#define AA 3
 
 // Constants
 const int MAX_MARCHING_STEPS=255;
@@ -34,9 +34,9 @@ const float PI=3.14159265359;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 const vec3 u_specular=vec3(1.30,1.,.70);
-const vec3 u_diffuse=vec3(1.30,0.0,0.70);
+const vec3 u_diffuse= vec3(0.9412, 0.698, 0.0745);
 const vec3 u_emission=vec3(.02);
-const vec3 u_ambient = vec3(0.8392, 0.7216, 0.8667);
+const vec3 u_ambient = vec3(0.8667, 0.8196, 0.7216);
 const vec3 u_ambientEnv = vec3(0.01);
 const float u_ka = 0.4;
 const float u_ks = 30.0;
@@ -315,7 +315,7 @@ float checkersGradBox( in vec2 p, in vec2 dpdx, in vec2 dpdy )
 
 Surface map(vec3 p){
   
-  Material mat = Material(
+  Material yellowMat = Material(
       u_ambient,    // ambient
       u_ka,         // ka
       u_diffuse,    // diffuse
@@ -326,33 +326,36 @@ Surface map(vec3 p){
       u_smoothness  // smoothness
     );
 
-  Material matBox = Material(
-    vec3(0.0118, 0.2235, 0.302),
+  Material blueMat = Material(
+    vec3(0.2078, 0.0706, 0.1804),
     1.0,
-    vec3(0.1216, 0.2824, 0.5608),
+    vec3(0.4471, 0.0235, 0.4667),
     5.0,
-    vec3(0.4431, 0.4314, 0.5098),
+    vec3(0.4196, 0.2431, 0.302),
     10.0,
     vec3(0.0, 0.0, 0.0),
-    15.0
+    150.0
   );
 
-  vec3 col = mod(p.x, 5.0)>0.3 && mod(p.z, 5.0) > 0.3 ? vec3(0.4392, 0.4275, 0.4275) : vec3(0.2471, 0.2392, 0.2392);
-  Surface suelo=Surface(
-    plane(sdfTranslate(p,vec3(0.,-0.5,0.)),vec3(0.,1.,0.),.5),
-    Material(vec3(1.0, 1.0, 1.0),0.,col,3.,vec3(1.0, 1.0, 1.0),25.,vec3(.1),50.)
-  );
+  Surface esfera = Surface(sphere(p-vec3(4.0,0.0,0.0),3.), yellowMat);
+  Surface cubo   = Surface(opRound(box(p-vec3(-1.0,0.0,0.0), vec3(2.0)),0.2), blueMat);
 
-  Surface auricular=Surface(
-    sdf(p),
-    mat
-  );
 
-  Surface esfera = Surface(sphere(p-vec3(3.0,0.0,3.0),3.), mat);
-  Surface cubo   = Surface(opRound(box(sdfRotateY(p+vec3(5.0,-.0,5.0), -1.0), vec3(2.0)),0.2), matBox);
-  Surface final=sdfSurfaceUnion(suelo,esfera);
-  final = sdfSurfaceUnion(final, cubo);
-  return final;
+  float interp;
+  float cuboEsfera = sdfSmoothUnion(cubo.sd,esfera.sd,1.1,2.0,interp);
+  
+
+  Material mBlend = Material(
+      mix(blueMat.ambient, yellowMat.ambient, interp),    // ambient
+      mix(blueMat.ka, yellowMat.ka, interp),         
+      mix(blueMat.diffuse, yellowMat.diffuse, interp),  
+      mix(blueMat.kd, yellowMat.kd, interp),         // kd
+      mix(blueMat.specular, yellowMat.specular, interp),   // specular
+      mix(blueMat.ks, yellowMat.ks, interp),         // ks
+      mix(blueMat.emission, yellowMat.emission, interp),   // emission
+      mix(blueMat.smoothness, yellowMat.smoothness, interp)  // smoothness
+      );
+  return Surface(cuboEsfera, mBlend);
 }
   
 Surface rayMarch(vec3 ro,vec3 rd,float start,float end){
