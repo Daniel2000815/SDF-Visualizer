@@ -5,60 +5,126 @@ import { tw } from "twind";
 // import { useStore } from "../../graphStore";
 import { usePrimitiveStore } from "../../primitiveStore";
 import { useStore } from "../../graphStore";
-import { useTheme } from '@nextui-org/react';
-import {Slider} from "../../Components/Slider";
+import { useTheme } from "@nextui-org/react";
+import { Slider } from "../../Components/Slider";
 
-import {CustomNode} from "./CustomNode";
-import {FloatInput} from "../../Components/FloatInput";
+import { CustomNode } from "./CustomNode";
+import { FloatInput } from "../../Components/FloatInput";
+import { constants } from "buffer";
 
 const primitiveSelector = (id: any) => (store: any) => ({
   primitives: store.primitives,
 });
 
 const graphSelector = (id: any) => (store: any) => ({
-  changePrimitive: (newP: string, mat: Material, parameters: Parameter[], inputs: number[]) => store.updateNode(id, { sdf: newP, material:  mat, uniforms: new Map(
-    parameters.map((param: Parameter, idx: number) => [`${id}_${param.symbol}`, inputs[idx]])
-  )}),
+  node: () => store.getNode(id),
+  changePrimitive: (
+    newP: string,
+    mat: Material,
+    parameters: Parameter[],
+    inputs: number[],
+    dropdownSelection: string
+  ) =>
+    store.updateNode(id, {
+      sdf: newP,
+      material: mat,
+      uniforms: new Map(
+        parameters.map((param: Parameter, idx: number) => [
+          `${id}_${param.symbol}`,
+          inputs[idx],
+        ])
+      ),
+      inputs: inputs,
+      primitive: newP,
+      dropdownSelection: dropdownSelection
+    }),
 });
 
-const theme : Theme = {
-  light:    "#ABDEFF",
-  primary:  "#498CFF",
-  dark:     "#005EFF",
-  accent:   "#004AC9"
-}
-
+const theme: Theme = {
+  light: "#ABDEFF",
+  primary: "#498CFF",
+  dark: "#005EFF",
+  accent: "#004AC9",
+};
 
 export function PrimitiveNode(props: { id: string; data: any }) {
-  const { primitives } = usePrimitiveStore(primitiveSelector(props.id), shallow);
-  const { changePrimitive } = useStore(graphSelector(props.id), shallow);
+  const { primitives } = usePrimitiveStore(
+    primitiveSelector(props.id),
+    shallow
+  );
+  const { changePrimitive, node } = useStore(graphSelector(props.id), shallow);
 
-  const [inputs, setInputs] = React.useState([1.0, 1.0, 1.0]);
+  const [inputs, setInputs] = React.useState<number[]>([1, 1, 1]);
   const [inputLabels, setInputLabels] = React.useState(["Radius", "", ""]);
   const [primitive, setPrimitive] = useState(
     primitives.find((p: any) => p.id === props.data.id)
   );
 
-  const [dropdownOptions, setDropdownOptions] = React.useState<string[]>(primitives.map((p: any) => p.name));
-  const [dropdownKeys, setDropdownKeys] = React.useState<string[]>(primitives.map((p: any) => p.id));
+  const [dropdownOptions, setDropdownOptions] = React.useState<string[]>(
+    primitives.map((p: any) => p.name)
+  );
+  const [dropdownKeys, setDropdownKeys] = React.useState<string[]>(
+    primitives.map((p: any) => p.id)
+  );
 
-  useEffect(()=>{
-    setDropdownOptions(primitives.map((p: any) => p.name))
+  const restoreState = () => {  }
+
+  useEffect(() => {
+    setDropdownOptions(primitives.map((p: any) => p.name));
     setDropdownKeys(primitives.map((p: any) => p.id));
-  }, [primitives])
+  }, [primitives]);
 
-  
+  useEffect(() => {
+    if (primitive === undefined) return;
+
+    console.log("HOMBRE OLA ", Array.from(node().data.uniforms.values()));
+    let newInputs = [...inputs];
+    console.log("AOA ", primitive);
+    const parameters: Parameter[] = primitive.parameters;
+
+    if (newInputs.length < parameters.length)
+      setInputs(
+        newInputs.concat(
+          new Array(parameters.length - newInputs.length).fill(0)
+        )
+      );
+    else {
+      let uniformValues = Array.from(node().data.uniforms.values());
+      newInputs =
+        uniformValues.length > 0 && uniformValues.every((u) => u !== undefined)
+          ? Array.from(node().data.uniforms.values())
+          : Object.keys(parameters).map(
+              (_, idx: number) => parameters[idx].defaultVal
+            );
+      setInputs(newInputs);
+    }
+  }, []);
+
   const handleChangePrimitive = (newP: string) => {
     console.log("NEW PRIM ", newP);
     const newPrimitive = primitives.find((p: any) => p.id === newP);
     const parameters: Parameter[] = newPrimitive.parameters;
-    // if (inputs.length < parameters.length)
-    //   setInputs(
-    //     inputs.concat(new Array(parameters.length - inputs.length).fill("0.0"))
-    //   );
 
-    const newInputs = Object.keys(parameters).map((_, idx: number) => parameters[idx].defaultVal);
-    setInputs(newInputs);
+    console.log("HOMBRE OLA ", Array.from(node().data.uniforms.values()), props.data);
+    let uniformValues = Array.from(node().data.uniforms.values());
+
+    let newInputs = [...inputs];
+
+    if (newInputs.length < parameters.length)
+      setInputs(
+        newInputs.concat(
+          new Array(parameters.length - newInputs.length).fill(1)
+        )
+      );
+    else {
+      newInputs =
+        uniformValues.length > 0 && uniformValues.every((u) => u !== undefined)
+          ? Array.from(node().data.uniforms.values())
+          : Object.keys(parameters).map(
+              (_, idx: number) => parameters[idx].defaultVal
+            );
+      setInputs(newInputs);
+    }
 
     const sdf = `${newP}(p${parameters.length > 0 ? "," : ""}${parameters
       .map((p, idx) => `${props.id}_${p.symbol}`)
@@ -72,14 +138,11 @@ export function PrimitiveNode(props: { id: string; data: any }) {
 
     console.log("pARAM ", parameters);
 
-
-    
-    
-    changePrimitive(sdf, newPrimitive.material, parameters, newInputs);
+    changePrimitive(sdf, newPrimitive.material, parameters, newInputs, newP );
   };
 
   const handleInputChange = (newVal: number, idx: number) => {
-    console.log(newVal, typeof(newVal));
+    console.log(newVal, typeof newVal);
     const newInputs = [...inputs];
     newInputs[idx] = newVal;
 
@@ -88,16 +151,19 @@ export function PrimitiveNode(props: { id: string; data: any }) {
     const parameters: Parameter[] = primitive.parameters;
     if (newInputs.length < parameters.length)
       setInputs(
-        newInputs.concat(new Array(parameters.length - newInputs.length).fill(0))
+        newInputs.concat(
+          new Array(parameters.length - newInputs.length).fill(0)
+        )
       );
 
     console.log("param:", parameters);
 
-    const sdf = `${primitive.id}(p${parameters.length > 0 ? "," : ""}${parameters
-      .map((p, idx) => `${props.id}_${p.symbol}`)
-      .join(",")})`;
-      
-    changePrimitive(sdf, primitive.material, parameters, newInputs);
+    const sdf = `${primitive.id}(p${
+      parameters.length > 0 ? "," : ""
+    }${parameters.map((p, idx) => `${props.id}_${p.symbol}`).join(",")})`;
+
+    changePrimitive(sdf, primitive.material, parameters, newInputs, primitive.id);
+    console.log("Ñ ", node());
   };
 
   return (
@@ -108,27 +174,34 @@ export function PrimitiveNode(props: { id: string; data: any }) {
       title="Primitive"
       dropdownKeys={dropdownKeys}
       dropdownOptions={dropdownOptions}
-      defaultDropdpwnOption={dropdownKeys[0]}
+      defaultDropdpwnOption={props.data.dropdownSelection || dropdownKeys[0]}
       onChangeDropdownOption={(newP: string) => handleChangePrimitive(newP)}
       theme={theme}
       currDropddownOption={primitive?.name}
     >
       {/* { JSON.stringify(props.data.uniforms)} */}
       {primitive &&
-        primitive.parameters.map((p: Parameter, idx: number) => p.type==="number" ?( 
-          <FloatInput
-            key={`${props.id}_${idx}`}
-            initialVal={inputs[idx]}
-            val={inputs[idx].toString()}
-            onChange={(newVal) => handleInputChange(newVal, idx)}
-            label={inputLabels[idx]}
-            adornment={inputLabels[idx]}
-            adornmentPos="left"
-          />
-        ) : 
-        <Slider value={inputs[idx]} label={inputLabels[idx]} onChange={(newVal: number) => handleInputChange(newVal, idx)} theme={theme}/>
+        primitive.parameters.map((p: Parameter, idx: number) =>
+          p.type === "number" ? (
+            <FloatInput
+              key={`${props.id}_${idx}`}
+              initialVal={inputs[idx]}
+              val={inputs[idx].toString()}
+              onChange={(newVal) => handleInputChange(newVal, idx)}
+              label={inputLabels[idx]}
+              adornment={inputLabels[idx]}
+              adornmentPos="left"
+            />
+          ) : (
+            <Slider
+              value={inputs[idx]}
+              label={inputLabels[idx]}
+              onChange={(newVal: number) => handleInputChange(newVal, idx)}
+              theme={theme}
+            />
+          )
         )}
-        {/* {JSON.stringify(props.data.children)} */}
+      {/* {JSON.stringify(props.data.children)} */}
     </CustomNode>
   );
 }

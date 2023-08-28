@@ -126,7 +126,6 @@ function MyShader(props: {
     setCompileError(false);
     setShader(CreateShader(props.sdf, props.primitives, Array.from(props.uniforms.keys())).helloGL);
 
-    console.log("HELLO ", props.material)
   }, [props.sdf, props.primitives]);
 
   useEffect(()=>{
@@ -158,7 +157,8 @@ function MyShader(props: {
   
 
   function CreateShader(sdf: string, primitives: string, newUniforms: string[]) {
-    console.log(" creating shader with uniforms", newUniforms, ", primitives ", primitives, fs(sdf, String(savedPrimitives).concat(primitives) ));
+
+    // console.log("HELLO SHADER ", fs(sdf, String(savedPrimitives).concat(primitives), newUniforms))
     return Shaders.create({
       helloGL: {
         frag: GLSL`${fs(sdf, String(savedPrimitives).concat(primitives), newUniforms)}`,

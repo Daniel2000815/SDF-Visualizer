@@ -9,11 +9,11 @@ import {FloatInput} from "../../Components/FloatInput";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id], 
   updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf}),
-  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
+  updateUniforms: (shaderUniforms: Map<string,number>, dropdownSelection: string) => store.updateNode(id, { uniforms: shaderUniforms, dropdownSelection: dropdownSelection}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
-const dropdownOptions = Object.values(RepeatOperations).map(v => v.replace("_", " "));
+const dropdownOptions = Object.values(RepeatOperations).map(v => v.replace(" ", "_"));
 
 const theme: Theme = {
   light: "#DBA5FF",
@@ -85,7 +85,7 @@ export function RepeatNode(props: { id: string; data: any }) {
     newUniforms.set(`${props.id}_repeatX`, repeatVal[0]);
     newUniforms.set(`${props.id}_repeatY`, repeatVal[1]);
     newUniforms.set(`${props.id}_repeatZ`, repeatVal[2]);
-    updateUniforms(newUniforms)
+    updateUniforms(newUniforms, operation)
   }
   useEffect(() => {
     console.log("YIJA ", props.data.uniforms)
@@ -110,7 +110,7 @@ export function RepeatNode(props: { id: string; data: any }) {
       id={props.id}
       data={props.data}
       dropdownOptions={dropdownOptions}
-      defaultDropdpwnOption={dropdownOptions[8]}
+      defaultDropdpwnOption={props.data.dropdownSelection || dropdownOptions[8]}
       dropdownKeys={dropdownOptions}
       onChangeDropdownOption={(v:string) => setOperation(v.replace(" ", "_"))}
       nInputs={1}

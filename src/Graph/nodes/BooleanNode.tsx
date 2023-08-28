@@ -10,11 +10,11 @@ import { Text } from "@nextui-org/react";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf }),
-  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
+  updateUniforms: (shaderUniforms: Map<string,number>, dropdownSelection:string) => store.updateNode(id, { uniforms: shaderUniforms, dropdownSelection:dropdownSelection}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
-const dropdownOptions = Object.values(BooleanOperations);
+const dropdownOptions = Object.values(BooleanOperations).map(v => v.replace(" ", "_"));
 
 const theme: Theme = {
   light: "#FFABAB",
@@ -66,7 +66,7 @@ export function BooleanNode(props: { id: string; data: any }) {
     let newUniforms = new Map<string,number>(props.data.uniforms);
     newUniforms.set(`${props.id}_smooth`, smooth);
     newUniforms.set(`${props.id}_n`, n);
-    updateUniforms(newUniforms)
+    updateUniforms(newUniforms, operation)
   }
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export function BooleanNode(props: { id: string; data: any }) {
       data={props.data}
       dropdownOptions={dropdownOptions}
       dropdownKeys={dropdownOptions}
-      defaultDropdpwnOption={BooleanOperations.Union}
+      defaultDropdpwnOption={props.data.dropdownSelection || BooleanOperations.Union}
       onChangeDropdownOption={setOperation}
       nInputs={Math.max(2, props.data.inputs.size + 1)}
       theme={theme}

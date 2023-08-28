@@ -11,11 +11,11 @@ import {FloatInput} from "../../Components/FloatInput";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, { sdf: sdf }),
-  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
+  updateUniforms: (shaderUniforms: Map<string,number>, dropdownSelection:string) => store.updateNode(id, { uniforms: shaderUniforms, dropdownSelection:dropdownSelection}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
-const dropdownOptions = Object.values(TransformOperations).map(v => v.replace("_", " "));
+const dropdownOptions = Object.values(TransformOperations).map(v => v.replace(" ", "_"));
 
 const theme: Theme = {
   light: "#FFFAA5",
@@ -90,7 +90,7 @@ export function TransformNode(props: { id: string; data: any }) {
     newUniforms.set(`${props.id}_transformX`, transformVal[0]);
     newUniforms.set(`${props.id}_transformY`, transformVal[1]);
     newUniforms.set(`${props.id}_transformZ`, transformVal[2]);
-    updateUniforms(newUniforms)
+    updateUniforms(newUniforms, operation)
   }
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export function TransformNode(props: { id: string; data: any }) {
       data={props.data}
       dropdownOptions={dropdownOptions}
       dropdownKeys={dropdownOptions}
-      defaultDropdpwnOption={dropdownOptions[1]}
+      defaultDropdpwnOption={props.data.dropdownSelection || dropdownOptions[1]}
       onChangeDropdownOption={handleChangeOption}
       nInputs={1}
       theme={theme}

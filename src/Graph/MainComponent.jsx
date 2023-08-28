@@ -2,7 +2,7 @@ import { ReactFlowProvider } from "reactflow";
 import { Graph } from "./Graph";
 import { shallow } from "zustand/shallow";
 import { defaultMaterial } from "../Shader/defaultMaterial";
-import { Grid, Button } from "@nextui-org/react";
+import { Grid, Button, Text } from "@nextui-org/react";
 import { useStore } from "../graphStore";
 import { SizeMe } from "react-sizeme";
 import { Shader } from "../Shader/Shader";
@@ -30,7 +30,7 @@ export function MainComponent() {
 
   const [saveError, setSaveError] = useState("Introduce name");
   const [saveName, setSaveName] = useState("");
-
+  
   function nameInUse(name) {
     const id = TransformToValidName(name);
     return primitives.some((p) => p.id === id);
@@ -54,14 +54,30 @@ export function MainComponent() {
 
   const handleSave = () => {
     const id = TransformToValidName(saveName);
+
+    let newParsedInput = selectedSdf.sdf;
+    console.log("EING 1 ", newParsedInput);
+    const params = Array.from(selectedSdf.uniforms, function (item) {
+      let paramKey = item[0].split("_")[1];
+      newParsedInput = newParsedInput.replaceAll(item[0], paramKey);
+        return {symbol: `${paramKey}`, label: `${paramKey}`, defaultVal: item[1], type: "number", range:[0,100]  }
+    });
+    console.log("EING 2 ", newParsedInput);
+    console.log("EING 3 ", params)
+
+    let inputParameters = Array.from(selectedSdf.uniforms, function (item) {
+      return item[0].split("_")[1]
+    });
     const e = {
       id: id,
       name: saveName,
       inputMode: InputMode.SDF,
-      input: [selectedSdf, "", ""],
-      parsedInput: selectedSdf,
-      parameters: [],
-      fHeader: `${id}(vec3 p)`,
+      input: [newParsedInput, "", "", "", "", ""],
+      parsedInput: newParsedInput,
+      parameters: params,
+      fHeader: `${id}(vec3 p ${
+        inputParameters.length > 0 ? "," : ""
+      }${inputParameters.map((p) => `float ${p}`).join(",")})`,
       material: defaultMaterial
     };
 
@@ -76,8 +92,8 @@ export function MainComponent() {
   };
 
   return (
-    <Grid.Container fluid>
-      <Grid xs={8}>
+    <Grid.Container gap={1} fluid>
+      <Grid  xs={8}>
         <ReactFlowProvider>
           <div style={{ width: "100vw", height: "90vh" }}>
             <Graph />
@@ -94,14 +110,16 @@ export function MainComponent() {
             alignItems="center"
             justify="flex-start"
             xs={4}
+            style={{borderLeft: "2px solid grey"}}
           >
-            <Grid style={{margin: "10px", marginTop: "50px"}}>
+            <Grid gap={20}><Text b size={40}>Preview</Text></Grid>
+            <Grid style={{margin: "10px", marginTop: "50px", border: "1px solid black"}}>
               <Shader
-                sdf={selectedSdf}
-                uniforms={new Map()}
+                sdf={selectedSdf.sdf}
+                uniforms={selectedSdf.uniforms}
                 primitives=""
                 material={defaultMaterial}
-                width={0.6 * size.width}
+                width={0.8 * size.width}
                 height={0.6 * size.width}
                 onError={() => {}}
               />

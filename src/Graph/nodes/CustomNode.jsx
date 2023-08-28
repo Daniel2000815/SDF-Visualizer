@@ -38,7 +38,9 @@ export function CustomNode({
   
   const handleDoubleClick = () => {
     if(data){
-      updateSelectedSdf(data.sdf);
+      console.log("ASA ", data)
+     
+      updateSelectedSdf({sdf: data.sdf, uniforms: data.uniforms, header: data.fHeader});
     }
   }
   return (

@@ -12,7 +12,7 @@ import { comboSort } from "nerdamer-ts/dist/Core/Utils";
 const selector = (id: any) => (store: any) => ({
   needsToUpdate: store.needsToUpdate[id],
   updateSdf: (sdf: string) => store.updateNode(id, {sdf: sdf}), 
-  updateUniforms: (shaderUniforms: Map<string,number>) => store.updateNode(id, { uniforms: shaderUniforms}),
+  updateUniforms: (shaderUniforms: Map<string,number>, dropdownSelection: string) => store.updateNode(id, { uniforms: shaderUniforms, dropdownSelection: dropdownSelection}),
   finishUpdate: () => store.setNeedsUpdate(id, false),
 });
 
@@ -76,12 +76,14 @@ export function DeformNode(props: { id: string; data: any }) {
     newUniforms.set(`${props.id}_elongZ`, elong[2]);
     newUniforms.set(`${props.id}_k`, k);
 
-    updateUniforms(newUniforms)
+    updateUniforms(newUniforms, operation)
   }
   
   useEffect(() => {
     handleUniforms()
     computeSdf();
+
+    
   }, [operation, elong, k]);
 
   useEffect(() => {
@@ -108,7 +110,7 @@ export function DeformNode(props: { id: string; data: any }) {
       data={props.data}
       dropdownOptions={dropdownOptions}
       dropdownKeys={dropdownOptions}
-      defaultDropdpwnOption={DeformOperations.Twist}
+      defaultDropdpwnOption={props.data.dropdownSelection || DeformOperations.Twist}
       onChangeDropdownOption={setOperation}
       nInputs={1}
       theme={theme}

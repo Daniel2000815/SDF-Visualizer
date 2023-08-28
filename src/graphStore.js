@@ -24,37 +24,37 @@ const defaultNodes = [
     id: "primitive",
     type: "primitive",
     position: { x: -150, y: 200 },
-    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
+    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map(), primitive: undefined, parameterInputs: [], dropdownSelection: "" },
   },
   {
     id: "primitive2",
     type: "primitive",
     position: { x: -150, y: -200 },
-    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [] , material: defaultMaterial, uniforms: new Map() },
+    data: { sdf: "cube(p,1.0)", inputs: new Map(), children: [] , material: defaultMaterial, uniforms: new Map(), primitive: undefined, parameterInputs: [], dropdownSelection: "" },
   },
   {
     id: "deform",
     type: "deform",
     position: { x: 150, y: 300 },
-    data: { sdf: "", inputs: new Map(), children: [] , material: defaultMaterial, uniforms: new Map() },
+    data: { sdf: "", inputs: new Map(), children: [] , material: defaultMaterial, uniforms: new Map(), primitive: undefined, parameterInputs: [], dropdownSelection: "" },
   },
   {
     id: "boolean",
     type: "boolean",
     position: { x: 150, y: -75 },
-    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map(), primitive: undefined, parameterInputs: [], dropdownSelection: "" },
   },
   {
     id: "transform",
     type: "transform",
     position: { x: 150, y: -400 },
-    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map(),primitive: undefined, parameterInputs: [], dropdownSelection: "" },
   },
   {
     id: "repeat",
     type: "repeat",
     position: { x: 150, y: -700 },
-    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() },
+    data: { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map(),primitive: undefined, parameterInputs: [], dropdownSelection: "" },
   },
 ];
 
@@ -231,7 +231,7 @@ export const useStore = create((set, get) => ({
     primitive2: false,
     transform: false,
   },
-  selectedSdf: "",
+  selectedSdf: {sdf: "", uniforms: new Map()},
 
   changeSelectedSdf(newSdf){
     set({selectedSdf: newSdf})
@@ -245,7 +245,7 @@ export const useStore = create((set, get) => ({
 
   createNode(type, x, y) {
     const id = nanoid().replace(/\d+/g, '');
-    const data = { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map() };
+    const data = { sdf: "", inputs: new Map(), children: [], material: defaultMaterial, uniforms: new Map(), primitive: undefined, parameterInputs: [], dropdownSelection: "" };
     const position = { x: x, y: y };
 
     set({ nodes: [...get().nodes, { id, type, data, position }] });
@@ -276,6 +276,9 @@ export const useStore = create((set, get) => ({
     localStorage.setItem("graph_storage", JSON.stringify(get().nodes));
   },
 
+  getNode(id){
+    return get().nodes.find(n => n.id === id);
+  },
   updateNode(id, data) {
     // update node logic -> update data
     console.log("UPDATE ", id, data)
