@@ -185,8 +185,8 @@ export function PrimitiveNode(props: { id: string; data: any }) {
           p.type === "number" ? (
             <FloatInput
               key={`${props.id}_${idx}`}
-              initialVal={inputs[idx]}
-              val={inputs[idx].toString()}
+              initialVal={inputs[idx] || 1}
+              val={inputs[idx]?.toString()}
               onChange={(newVal) => handleInputChange(newVal, idx)}
               label={inputLabels[idx]}
               adornment={inputLabels[idx]}

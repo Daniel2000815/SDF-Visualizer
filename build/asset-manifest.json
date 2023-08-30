@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "./static/css/main.e1493b07.css",
-    "main.js": "./static/js/main.c80faa56.js",
+    "main.js": "./static/js/main.e57c6388.js",
     "static/media/fira-code-all-400-normal.woff": "./static/media/fira-code-all-400-normal.c050f0ce726c76d279c8.woff",
     "static/media/KaTeX_AMS-Regular.ttf": "./static/media/KaTeX_AMS-Regular.f80d9eaff7bad6dad739.ttf",
     "static/media/KaTeX_Main-Regular.ttf": "./static/media/KaTeX_Main-Regular.af7fc7b32dbf2a640c9c.ttf",
@@ -71,10 +71,10 @@
     "static/media/KaTeX_Size3-Regular.woff2": "./static/media/KaTeX_Size3-Regular.1ef7adae735724bab211.woff2",
     "index.html": "./index.html",
     "main.e1493b07.css.map": "./static/css/main.e1493b07.css.map",
-    "main.c80faa56.js.map": "./static/js/main.c80faa56.js.map"
+    "main.e57c6388.js.map": "./static/js/main.e57c6388.js.map"
   },
   "entrypoints": [
     "static/css/main.e1493b07.css",
-    "static/js/main.c80faa56.js"
+    "static/js/main.e57c6388.js"
   ]
 }

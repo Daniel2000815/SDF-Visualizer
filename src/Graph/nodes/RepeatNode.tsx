@@ -87,9 +87,28 @@ export function RepeatNode(props: { id: string; data: any }) {
     newUniforms.set(`${props.id}_repeatZ`, repeatVal[2]);
     updateUniforms(newUniforms, operation)
   }
+
   useEffect(() => {
-    console.log("YIJA ", props.data.uniforms)
+    if(props.data.uniforms.has(`${props.id}_repeatX`)){
+      console.log("lll ", props.data.uniforms)
+
+      setRepeatVal([
+        props.data.uniforms.get(`${props.id}_repeatX`),
+        props.data.uniforms.get(`${props.id}_repeatY`),
+        props.data.uniforms.get(`${props.id}_repeatZ`)
+      ])
+    }
+    if(props.data.uniforms.has(`${props.id}_separation`)){
+      setSeparation(
+        props.data.uniforms.get(`${props.id}_separation`)
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log("YIJA ", props.data.uniforms, " repeat ", repeatVal)
     handleUniforms()
+
     
     computeSdf();
   }, [operation, repeatVal, separation]);
@@ -124,7 +143,7 @@ export function RepeatNode(props: { id: string; data: any }) {
         operation
       ) && 
         <FloatInput
-          initialVal={"5.0"}
+          initialVal={separation}
           val={separation.toString()}
           onChange={(e) => setSeparation(e)}
           step={1.0}
@@ -135,7 +154,7 @@ export function RepeatNode(props: { id: string; data: any }) {
         
       }
       {operation === RepeatOperations.Finite_Repeat && 
-        <Vector3Input defaultX={1.0} defaultY={1.0} defaultZ={1.0} min={0} step={1.0} handleChange={setRepeatVal} />
+        <Vector3Input defaultX={repeatVal[0]} defaultY={repeatVal[1]} defaultZ={repeatVal[2]} min={0} step={1.0} handleChange={setRepeatVal} />
       }
     </CustomNode>
   );

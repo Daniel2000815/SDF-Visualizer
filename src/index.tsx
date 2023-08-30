@@ -121,7 +121,7 @@ function App() {
         onClose={() => setShowHelp(false)}
       >
         <Modal.Header>
-          <Text b size={18}>
+          <Text b size={28}>
             Help
           </Text>
         </Modal.Header>

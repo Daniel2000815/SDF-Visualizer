@@ -38,7 +38,7 @@ export function DropdownTS(props: {
     props.onChange(Array.from(selected).join(""));
   }, [selected]);
 
-  return (<>{props.defaultValue} ; {props.keys?.join(", ")}
+  return (
     <Dropdown>
       <Dropdown.Button
         css={{
@@ -68,6 +68,6 @@ export function DropdownTS(props: {
           </Dropdown.Item>
         )}
       </Dropdown.Menu>
-    </Dropdown></>
+    </Dropdown>
   );
 }

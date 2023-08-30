@@ -70,6 +70,18 @@ export function BooleanNode(props: { id: string; data: any }) {
   }
 
   useEffect(() => {
+    if(props.data.uniforms.has(`${props.id}_smooth`)){
+      setSmooth(
+        props.data.uniforms.get(`${props.id}_smooth`))
+    }
+    if(props.data.uniforms.has(`${props.id}_n`)){
+      setN(
+        props.data.uniforms.get(`${props.id}_n`)
+      )
+    }
+  }, [])
+
+  useEffect(() => {
     handleUniforms()
     computeSdf();
   }, [operation, smooth, n]);
@@ -99,7 +111,7 @@ export function BooleanNode(props: { id: string; data: any }) {
       {/* UPDATE: {needsToUpdate?.toString()} */}
         {/* SDF: {props.data.sdf} */}
         {/* INPUTS: {JSON.stringify(props.data.inputs)} */}
-       <Slider value={smooth} label="Strength" min="0.001" max="5" onChange={setSmooth} theme={theme} />
+       <Slider value={smooth} label="Strength" min="0.000" max="5" onChange={setSmooth} theme={theme} />
         <FloatInput
             key={`${props.id}_n`}
             val={n.toString()}

@@ -11,6 +11,7 @@ import { Shaders, Node, GLSL, Visitor, ShaderIdentifier } from "gl-react";
 import { Surface } from "gl-react-dom";
 import { fs } from "./fragmentShader";
 import { defaultMaterial } from "./defaultMaterial";
+import { Grid, Text } from "@nextui-org/react";
 
 const defaultShader = Shaders.create({
   helloGL: {
@@ -65,6 +66,7 @@ function MyShader(props: {
   onError?: (e: string) => void;
   uniforms: Map<string, any>;
   material: Material;
+  errorMsg?: string
 }) {
   const { savedPrimitives } = usePrimitiveStore(selector(), shallow);
 
@@ -223,11 +225,22 @@ function MyShader(props: {
   }
 
   return <div style={{}}>
-    {compileError && 
+    {compileError && !props.errorMsg && 
     <UseAnimations
           size={props.width ? 0.6 * props.width : 24}
           animation={alertCircle}
-        />}
+      />}
+    {compileError && props.errorMsg && <Grid.Container justify="center">
+      <Grid>
+      <UseAnimations
+          size={props.width ? 0.4 * props.width : 24}
+          animation={alertCircle}
+      />
+      </Grid>
+    <Text b size={20}>{props.errorMsg}</Text>
+    </Grid.Container>
+ 
+      }
         {/* {JSON.stringify(Object.fromEntries(props.uniforms.entries()))} */}
     {!compileError && <div
         // ref={ref}

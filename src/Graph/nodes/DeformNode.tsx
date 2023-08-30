@@ -80,6 +80,23 @@ export function DeformNode(props: { id: string; data: any }) {
   }
   
   useEffect(() => {
+    if(props.data.uniforms.has(`${props.id}_elongX`)){
+      console.log("lll ", props.data.uniforms)
+
+      setElong([
+        props.data.uniforms.get(`${props.id}_elongX`),
+        props.data.uniforms.get(`${props.id}_elongY`),
+        props.data.uniforms.get(`${props.id}_elongZ`)
+      ])
+    }
+    if(props.data.uniforms.has(`${props.id}_k`)){
+      setK(
+        props.data.uniforms.get(`${props.id}_k`)
+      )
+    }
+  }, [])
+
+  useEffect(() => {
     handleUniforms()
     computeSdf();
 
@@ -121,7 +138,7 @@ export function DeformNode(props: { id: string; data: any }) {
         SDF: {props.data.sdf}
         INPUTS: {JSON.stringify(props.data.inputs)} */}
         {operation === DeformOperations.Elongation ? 
-        (<Vector3Input handleChange={setElong} step={1}/>) :
+        (<Vector3Input defaultX={elong[0]} defaultY={elong[1]} defaultZ={elong[2]} min={0} handleChange={setElong} step={1}/>) :
         (<Slider value={k} label={"Amount"} onChange={setK} theme={theme}/>)
       }
 

@@ -112,7 +112,7 @@ export function MainComponent() {
             xs={4}
             style={{borderLeft: "2px solid grey"}}
           >
-            <Grid gap={20}><Text b size={40}>Preview</Text></Grid>
+            <Grid gap={20}><Text b size={40}>Preview and Save</Text></Grid>
             <Grid style={{margin: "10px", marginTop: "50px", border: "1px solid black"}}>
               <Shader
                 sdf={selectedSdf.sdf}
@@ -122,6 +122,7 @@ export function MainComponent() {
                 width={0.8 * size.width}
                 height={0.6 * size.width}
                 onError={() => {}}
+                errorMsg="Double click a header node to preview"
               />
             </Grid>
             <Grid.Container direction="row" gap={3}>

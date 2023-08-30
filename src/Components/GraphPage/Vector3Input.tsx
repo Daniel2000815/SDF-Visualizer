@@ -21,6 +21,12 @@ export function Vector3Input(props: {
   const [z, setZ] = useState(props.defaultZ || 0.0);
 
   useEffect(() => {
+    setX(props.defaultX || 0.0)
+    setY(props.defaultY || 0.0)
+    setZ(props.defaultZ || 0.0)
+  }, [props])
+  useEffect(() => {
+    console.log("change ", x, y, z)
     props.handleChange([x, y, z]);
   }, [x, y, z]);
 
@@ -30,7 +36,7 @@ export function Vector3Input(props: {
 
       <Grid  key="xInput">
       <FloatInput
-         initialVal={props.defaultX|| 0.0}
+         initialVal={x|| 0.0}
          val={x.toString()}
           onChange={(e) => setX(e)}
           label="inputX"
@@ -43,7 +49,7 @@ export function Vector3Input(props: {
       </Grid>
       <Grid  key="yInput">
         <FloatInput
-         initialVal={props.defaultY || 0.0}
+         initialVal={y || 0.0}
          val={y.toString()}
           onChange={(e) => setY(e)}
           label="inputY"
@@ -57,7 +63,7 @@ export function Vector3Input(props: {
       </Grid>
       <Grid  key="zInput">
       <FloatInput
-         initialVal={props.defaultZ || 0.0}
+         initialVal={z || 0.0}
          val={z.toString()}
           onChange={(e) => setZ(e)}
           label="inputZ"

@@ -94,6 +94,17 @@ export function TransformNode(props: { id: string; data: any }) {
   }
 
   useEffect(() => {
+    if(props.data.uniforms.has(`${props.id}_transformX`)){
+
+      setTransformVal([
+        props.data.uniforms.get(`${props.id}_transformX`),
+        props.data.uniforms.get(`${props.id}_transformY`),
+        props.data.uniforms.get(`${props.id}_transformZ`)
+      ])
+    }
+  }, [])
+
+  useEffect(() => {
     handleUniforms()
     computeSdf();
   }, [operation, transformVal]);
@@ -129,7 +140,7 @@ export function TransformNode(props: { id: string; data: any }) {
       {[TransformOperations.Translate, TransformOperations.RotateXYZ].includes(
         operation
       ) ? (
-        <Vector3Input handleChange={setTransformVal} />
+        <Vector3Input defaultX={transformVal[0]} defaultY={transformVal[1]} defaultZ={transformVal[2]} handleChange={setTransformVal} />
       ) : (
         <FloatInput
           initialVal={"0.0"}
