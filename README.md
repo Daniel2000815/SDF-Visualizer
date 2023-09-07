@@ -38,26 +38,3 @@ En esta página se pueden crear nuevas superficies. Por defecto aparecen 3. Para
 
 > _Ejemplo:_ para crear una esfera con diámetro variable, puedes seleccionar la opción "SDF" e introducir `length(p) - r` en el campo de texto de la ecuación. En la tabla tendrás que añadir un nuevo parámetro con símbol `r`, etiqueta la que quieras y un valor por defecto, por ejemplo $1$. Otra opción sería usar la opción "Implicit" e introducir $x^2+y^2+z^2-r$.
 
-### Fallos conocidos / TODO
-
-- _Surfaces_:
-  - [ ] Algunos fallos no se imprimen bien.
-  - [ ] Modificar el material solo tiene efecto en la previsualización al crear la superficie.
-  - [x] Las superficies creadas no se guardan en el almacenamiento local.
-  - [x] Error al introducir operador de división al crear superficie paramétrica.
-  - [x] Algunos campos de texto tienen errores de focus
-  - [x] No se pueden usar parámetros cuando el tipo de ecuación es "Parametric".
-  - [x] En el modo "SDF" si hay algún fallo no te avisa, simplemente no se visualiza nada.
-  - [x] El botón de editar no funciona.
-  - [x] Añadir controles de ayuda .
-- _Graph_
-  - [ ] El zoom no funciona bien.
-  - [ ] Algunas combinaciones de nodos no funcionan bien porque no se sustituye bien la expresion con "p, ".
-  - [x] Al borrar conexiones a un nodo booleano, algunas conexiones que no deberian también se borrar.
-  - [ ] Save / Load ?
-  - [x] Etiquetas de parámetros con espacios no se muestran bien.
-  - [x] Faltan algunas operaciones.
-  - [x] Operador de escalado no funciona.
-  - [x] Eliminar conexiones hace que deje de funcionar.
-  - [x] La primera vez que se selecciona un desplegable se cierra solo.
-  - [x] Rendimiento.
