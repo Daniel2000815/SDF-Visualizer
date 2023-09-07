@@ -1,9 +1,11 @@
 # SDF Visualizer
 
 ### Ejecución
-
 - Visitar [GitHub Pages](https://daniel2000815.github.io/SDF-Visualizer/) o bien abrir [index.html](./build/index.html) para ejecutar en local.
 
+## Librería de polinomios en varias variables
+Librería que usa la aplicación para trabajar con polinomios en varias variables en $\mathbb{Q}$, calcular bases de Gröbner y resolver el problema de implicitación. El código y la documentación se pueden consultar en [https://github.com/Daniel2000815/multivariate-polynomial](https://github.com/Daniel2000815/multivariate-polynomial).
+ 
 ### Estructura
 
 Se pueden elegir diferentes pestañas desde la barra superior:
@@ -38,3 +40,5 @@ En esta página se pueden crear nuevas superficies. Por defecto aparecen 3. Para
 
 > _Ejemplo:_ para crear una esfera con diámetro variable, puedes seleccionar la opción "SDF" e introducir `length(p) - r` en el campo de texto de la ecuación. En la tabla tendrás que añadir un nuevo parámetro con símbol `r`, etiqueta la que quieras y un valor por defecto, por ejemplo $1$. Otra opción sería usar la opción "Implicit" e introducir $x^2+y^2+z^2-r$.
 
+#### Playground
+Esta zona permite al usuario configurar y ver las diferencias visuales y de rendimiento en tiempo real de los diferentes algoritmos de renderizado e iluminación sobre una escena de ejemplo generada por *raytracing*.
